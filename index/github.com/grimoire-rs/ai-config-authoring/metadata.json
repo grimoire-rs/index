@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "name": "ai-config-authoring",
+  "kind": "skill",
+  "ref": "grim.ocx.sh/skills/ai-config-authoring",
+  "description": "Craft effective AI agent configuration — skills, rules, agents — for any AI coding client",
+  "repository": "https://github.com/grimoire-rs/grimoire",
+  "owner": { "github": "grimoire-rs", "id": 298895348 }
+}

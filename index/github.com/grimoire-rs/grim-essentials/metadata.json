@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "name": "grim-essentials",
+  "kind": "bundle",
+  "ref": "grim.ocx.sh/bundles/grim-essentials",
+  "description": "Grimoire first-party starter pack: grim CLI usage, AI-config authoring craft, artifact authoring",
+  "repository": "https://github.com/grimoire-rs/grimoire",
+  "owner": { "github": "grimoire-rs", "id": 298895348 }
+}
