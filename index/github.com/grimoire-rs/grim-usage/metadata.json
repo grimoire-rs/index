@@ -2,8 +2,11 @@
   "schema": 1,
   "name": "grim-usage",
   "kind": "skill",
-  "ref": "grim.ocx.sh/skills/grim-usage",
-  "description": "Drive the grim CLI — install, update, search, and publish AI-config artifacts",
+  "ref": "ghcr.io/grimoire-rs/skills/grim-usage",
+  "description": "Drive the grim CLI \u2014 install, update, search, and publish AI-config artifacts",
   "repository": "https://github.com/grimoire-rs/grimoire",
-  "owner": { "github": "grimoire-rs", "id": 298895348 }
+  "owner": {
+    "github": "grimoire-rs",
+    "id": 298895348
+  }
 }

@@ -2,8 +2,11 @@
   "schema": 1,
   "name": "grim-authoring",
   "kind": "skill",
-  "ref": "grim.ocx.sh/skills/grim-authoring",
-  "description": "Author, validate, and package grim-publishable artifacts — skills, rules, agents, bundles",
+  "ref": "ghcr.io/grimoire-rs/skills/grim-authoring",
+  "description": "Author, validate, and package grim-publishable artifacts \u2014 skills, rules, agents, bundles",
   "repository": "https://github.com/grimoire-rs/grimoire",
-  "owner": { "github": "grimoire-rs", "id": 298895348 }
+  "owner": {
+    "github": "grimoire-rs",
+    "id": 298895348
+  }
 }
