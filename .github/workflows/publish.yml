@@ -3,6 +3,9 @@ name: publish
 on:
   push:
     branches: [main]
+  # Auto-merges land via GITHUB_TOKEN, whose pushes do not retrigger
+  # push workflows — validate-pr dispatches this workflow explicitly.
+  workflow_dispatch:
 
 permissions:
   contents: read
