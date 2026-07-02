@@ -14,6 +14,7 @@ Env inputs:
 Exit 0 = eligible for auto-merge. Non-zero = manual review required.
 """
 
+import base64
 import json
 import os
 import re
@@ -27,7 +28,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build import KINDS, validate  # noqa: E402  (trusted, same checkout)
 
 PATH_RE = re.compile(r"^index/github\.com/([^/]+)/([^/]+)/metadata\.json$")
-API = "https://api.github.com"
+# GITHUB_API_URL is predefined in GitHub Actions — GHE forks get their own
+# instance's API automatically.
+API = os.environ.get("GITHUB_API_URL", "https://api.github.com")
 
 # App bots trusted to announce for a namespace (first-party publish CI).
 # Keyed by bot login, value = (numeric account id, allowed namespaces).
@@ -83,7 +86,12 @@ def namespace_id(ns: str) -> int | None:
 
 
 def registry_token(host: str, repo: str, challenge: str) -> str | None:
-    """Anonymous bearer-token dance for registries that 401 with a realm."""
+    """Bearer-token dance for registries that 401 with a realm.
+
+    Anonymous by default; set GRIM_INDEX_REGISTRY_AUTH to `user:token` to
+    authenticate the token request (private corporate registries don't
+    serve anonymous pull tokens).
+    """
     m = re.search(r'realm="([^"]+)"', challenge)
     if not m:
         return None
@@ -92,10 +100,12 @@ def registry_token(host: str, repo: str, challenge: str) -> str | None:
     if svc:
         params["service"] = svc.group(1)
     url = f"{m.group(1)}?{urllib.parse.urlencode(params)}"
+    headers = {"User-Agent": "grimoire-index-bot"}
+    auth = os.environ.get("GRIM_INDEX_REGISTRY_AUTH", "")
+    if auth:
+        headers["Authorization"] = "Basic " + base64.b64encode(auth.encode()).decode()
     try:
-        with urllib.request.urlopen(
-            urllib.request.Request(url, headers={"User-Agent": "grimoire-index-bot"})
-        ) as resp:
+        with urllib.request.urlopen(urllib.request.Request(url, headers=headers)) as resp:
             return json.loads(resp.read()).get("token")
     except (urllib.error.URLError, json.JSONDecodeError):
         return None

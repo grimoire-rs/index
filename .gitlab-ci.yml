@@ -1,0 +1,62 @@
+# GitLab CI for self-hosted index forks. Inert on GitHub (the GitHub
+# workflows in .github/ are the mirror-image and inert on GitLab).
+#
+# Auto-merge gate for package announcements, GitLab flavor:
+#   validate-mr  — MR pipelines: path/ownership/schema/ref checks, then
+#                  requests merge-when-pipeline-succeeds via the API.
+#   test         — offline self-checks for the validator.
+#   pages        — default branch: compile dist/ and publish GitLab Pages.
+#
+# Required CI/CD variable (Settings > CI/CD > Variables, masked):
+#   GRIM_INDEX_BOT_TOKEN  group or project access token, `api` scope, with
+#                         merge rights on the default branch. CI_JOB_TOKEN
+#                         cannot merge MRs or read the members API.
+# Optional:
+#   GRIM_INDEX_MIN_ACCESS_LEVEL  membership threshold (default 30/Developer)
+#   GRIM_INDEX_REGISTRY_AUTH     `user:token` for private-registry ref checks
+#
+# SAFETY CONTRACT: MR pipelines execute the source branch's CI config, so
+# the validate job re-checks out scripts/ from the trusted target branch
+# and consumes the MR tree as data only. The real boundary is project
+# membership — see the README security notes (protected main, masked
+# token, optional external pinned CI config).
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+stages: [test, deploy]
+
+validate-mr:
+  stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  image: python:3.12-alpine
+  variables:
+    GIT_DEPTH: "50"
+  script:
+    - apk add --no-cache git >/dev/null
+    # Trusted code: replace scripts/ with the target branch's copy.
+    - git fetch origin "+refs/heads/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME:refs/tmp/target" "$CI_MERGE_REQUEST_DIFF_BASE_SHA"
+    - git checkout refs/tmp/target -- scripts/
+    - git diff --name-only --no-renames "$CI_MERGE_REQUEST_DIFF_BASE_SHA" HEAD > changed.txt
+    - CHANGED_FILES="$(cat changed.txt)" python3 scripts/validate_mr.py
+
+test:
+  stage: test
+  image: python:3.12-alpine
+  script:
+    - python3 scripts/test_validate_mr.py
+
+pages:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  image: python:3.12-alpine
+  script:
+    - python3 scripts/build.py
+    # Classic `pages` job contract: publish the `public/` artifact.
+    - mv dist public
+  artifacts:
+    paths: [public]

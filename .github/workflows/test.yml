@@ -1,0 +1,30 @@
+name: test
+
+# Offline self-checks for the validator scripts. Runs on script changes
+# only — announcement PRs are gated by validate-pr.yml instead.
+
+on:
+  push:
+    branches: [main]
+    paths: [scripts/**]
+  pull_request:
+    paths: [scripts/**]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Validator self-checks
+        run: python3 scripts/test_validate_mr.py
+      - name: Build compiles
+        run: python3 scripts/build.py

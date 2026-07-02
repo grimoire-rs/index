@@ -79,8 +79,7 @@ default registry ships with it preconfigured):
 
 ```toml
 [[registries]]
-url = "ghcr.io/grimoire-rs"
-index = "https://index.grimoire.rs"       # https static files…
+index = "https://index.grimoire.rs"           # https static files…
 # index = "https://github.com/you/index.git"  # …or any git repository
 ```
 
@@ -88,6 +87,27 @@ When `index` is set, browse/search reads the index instead of the OCI
 `/v2/_catalog` endpoint (which GHCR does not offer). Point it at any
 fork of this repository — served as static files or as a plain git
 repo — to run a private index.
+
+## Running on self-hosted GitLab
+
+Fork or import this repository into your GitLab instance — the shipped
+`.gitlab-ci.yml` gives you the same validate/auto-merge/Pages pipeline
+(the `.github/` workflows stay inert there):
+
+1. Import the repo, protect the default branch.
+2. Create a group or project access token (`api` scope, merge rights)
+   and set it as the **masked** CI/CD variable `GRIM_INDEX_BOT_TOKEN`.
+3. Pointers live at `index/<your-gitlab-host>/<group>/<pkg>/metadata.json`
+   (nested groups allowed) with `owner.login` = the group path and
+   `owner.id` = the GitLab namespace id. MRs auto-merge when the author
+   is a member of the namespace group (`GRIM_INDEX_MIN_ACCESS_LEVEL`,
+   default Developer) and all pointer checks pass.
+4. Consume via `index = "https://<host>/<group>/index.git"` (private
+   repos work through ambient git credentials) or GitLab Pages.
+
+Full guide: [grimoire.rs — Self-Hosted GitLab Setup][self-hosted].
+
+[self-hosted]: https://grimoire.rs/self-hosted-gitlab.html
 
 ## License
 

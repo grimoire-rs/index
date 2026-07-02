@@ -38,8 +38,14 @@ def validate(path: Path, meta: dict) -> None:
     if meta["name"] != path.parent.name:
         fail(path, f"name {meta['name']!r} != directory {path.parent.name!r}")
     owner = meta["owner"]
-    if not isinstance(owner, dict) or {"github", "id"} - owner.keys():
-        fail(path, "owner must be an object with 'github' and 'id'")
+    # `github` names a GitHub login; `login` is the generic key non-GitHub
+    # forges use (the pointer's host segment carries the forge context).
+    if (
+        not isinstance(owner, dict)
+        or "id" not in owner
+        or not ({"github", "login"} & owner.keys())
+    ):
+        fail(path, "owner must be an object with 'id' and 'github' or 'login'")
 
 
 def main() -> None:
