@@ -29,6 +29,14 @@ from build import KINDS, validate  # noqa: E402  (trusted, same checkout)
 PATH_RE = re.compile(r"^index/github\.com/([^/]+)/([^/]+)/metadata\.json$")
 API = "https://api.github.com"
 
+# App bots trusted to announce for a namespace (first-party publish CI).
+# Keyed by bot login, value = (numeric account id, allowed namespaces).
+# "[bot]" logins are app-reserved (humans cannot register brackets) and
+# app slugs are globally unique; the id is pinned anyway as belt-and-braces.
+TRUSTED_BOTS: dict[str, tuple[int, frozenset[str]]] = {
+    "grimoire-index-announce[bot]": (298988186, frozenset({"grimoire-rs"})),
+}
+
 
 def fail(msg: str) -> None:
     sys.exit(f"::error::{msg}")
@@ -52,7 +60,11 @@ def gh_api(path: str) -> tuple[int, dict | None]:
 
 
 def namespace_allowed(ns: str, author: str, author_id: str) -> bool:
-    """ns == author, or ns is an org the author publicly belongs to."""
+    """ns == author, an org the author publicly belongs to, or a trusted bot."""
+    bot = TRUSTED_BOTS.get(author)
+    if bot is not None:
+        bot_id, namespaces = bot
+        return str(bot_id) == author_id and ns.lower() in namespaces
     if ns.lower() == author.lower():
         status, data = gh_api(f"/users/{urllib.parse.quote(ns)}")
         return status == 200 and str(data["id"]) == author_id
