@@ -20,7 +20,11 @@ KINDS = {"skill", "rule", "agent", "bundle"}
 
 
 def fail(path: Path, msg: str) -> None:
-    sys.exit(f"error: {path.relative_to(ROOT)}: {msg}")
+    try:
+        shown = path.relative_to(ROOT)
+    except ValueError:  # path from a PR data checkout, not this tree
+        shown = path
+    sys.exit(f"error: {shown}: {msg}")
 
 
 def validate(path: Path, meta: dict) -> None:

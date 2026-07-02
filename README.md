@@ -50,10 +50,21 @@ the `github.com/` prefix) are reserved and require maintainer approval.
 
 ## Publishing a package
 
-1. Push your package to any OCI registry (`grim release`)
+1. Push your package to any OCI registry (`grim release` / `grim publish`)
 2. Open a PR adding `index/github.com/<your-login>/<package>/metadata.json`
-3. CI validates the manifest and namespace ownership; the PR is merged
-   automatically when checks pass
+   — or let `grim publish --announce` open it for you
+3. CI validates and auto-merges when **all** of these hold:
+   - only `index/github.com/<ns>/<pkg>/metadata.json` paths changed
+   - `<ns>` is the PR author's login, or an org the author is a
+     **public** member of
+   - `owner.github` matches `<ns>` and `owner.id` matches the account's
+     numeric GitHub ID
+   - the metadata passes schema validation
+   - `ref` is reachable: the registry lists at least one tag (publish
+     before you announce)
+
+Anything else (vanity namespaces, script changes, unreachable refs)
+falls through to manual maintainer review.
 
 ## Consuming
 
@@ -63,9 +74,20 @@ The compiled index is served as static files:
 - `https://index.grimoire.rs/index/github.com/<login>/<package>/metadata.json`
   — single package, path-addressable
 
-grim uses this automatically via the `index` config key (default:
-`https://index.grimoire.rs`). Point it at any fork of this repository
-served as static files to run a private index.
+grim consumes this via the per-registry `index` property (the built-in
+default registry ships with it preconfigured):
+
+```toml
+[[registries]]
+url = "ghcr.io/grimoire-rs"
+index = "https://index.grimoire.rs"       # https static files…
+# index = "https://github.com/you/index.git"  # …or any git repository
+```
+
+When `index` is set, browse/search reads the index instead of the OCI
+`/v2/_catalog` endpoint (which GHCR does not offer). Point it at any
+fork of this repository — served as static files or as a plain git
+repo — to run a private index.
 
 ## License
 
