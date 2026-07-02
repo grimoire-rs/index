@@ -20,7 +20,8 @@ Gate (all must hold, any failure -> non-zero exit -> manual review):
      member of the group (inherited membership counts) with sufficient
      access level, or a trusted bot
   3. every file passes the schema checks, owner.login matches the
-     namespace, owner.id matches the GitLab namespace id
+     namespace, owner.id matches the GitLab group id (group namespaces)
+     or user id (user namespaces)
   4. every ref lists at least one tag on its registry
 On success the MR is merged via merge_when_pipeline_succeeds (a direct
 merge from inside the still-running pipeline would be rejected when
@@ -90,9 +91,24 @@ def path_rule(host: str) -> re.Pattern:
 
 
 def namespace_info(ns: str) -> dict | None:
-    """The GitLab namespace object (kind, id, full_path) or None."""
+    """Namespace identity: kind, full_path, and the id that grim stamps
+    into owner.id (group id for groups, USER id for user namespaces).
+
+    /namespaces is membership-scoped — a project access token's bot user
+    cannot see foreign namespaces, so user namespaces always 404 for it.
+    User namespaces therefore resolve through the public /users lookup,
+    which also supplies the publicly verifiable user id (a user
+    namespace's own id is invisible to anyone but its owner).
+    """
     status, data = api_get(f"/namespaces/{urllib.parse.quote(ns, safe='')}")
-    return data if status == 200 and isinstance(data, dict) else None
+    if status == 200 and isinstance(data, dict) and data.get("kind") != "user":
+        return data
+    status, users = api_get(f"/users?username={urllib.parse.quote(ns, safe='')}")
+    if status == 200 and isinstance(users, list):
+        hit = [u for u in users if u.get("username", "").lower() == ns.lower()]
+        if len(hit) == 1:
+            return {"kind": "user", "id": hit[0]["id"], "full_path": hit[0]["username"]}
+    return None
 
 
 def namespace_allowed(
@@ -104,7 +120,10 @@ def namespace_allowed(
         bot_id, namespaces = bot
         return bot_id == author_id and ("*" in namespaces or ns.lower() in namespaces)
     if ns_info.get("kind") == "user":
-        return author.lower() == ns_info.get("full_path", "").lower()
+        return (
+            author.lower() == ns_info.get("full_path", "").lower()
+            and author_id == ns_info.get("id")
+        )
     # Group namespace: /members/all/ includes inherited membership, so a
     # parent-group member owns subgroup namespaces too.
     status, member = api_get(

@@ -55,9 +55,68 @@ def test_build_validate_owner_keys() -> None:
     assert "owner" in expect_exit(build.validate, path, meta({"login": "acme"}))
 
 
+def test_namespace_info_user_fallback(monkey) -> None:
+    # /namespaces is membership-scoped: a project access token's bot user
+    # cannot see foreign namespaces, so user namespaces 404 — fall back to
+    # the public /users lookup and carry the USER id (owner.id contract).
+    def get(path):
+        if path.startswith("/namespaces/"):
+            return 404, None
+        if path.startswith("/users?username="):
+            return 200, [{"id": 5, "username": "Acme"}]
+        raise AssertionError(f"unexpected GET {path}")
+
+    monkey["get"] = get
+    assert validate_mr.namespace_info("acme") == {
+        "kind": "user",
+        "id": 5,
+        "full_path": "Acme",
+    }
+
+    # A visible user namespace still resolves to the user id, never the
+    # namespace id — grim stamps the user id into owner.id.
+    def get_visible(path):
+        if path.startswith("/namespaces/"):
+            return 200, {"kind": "user", "id": 999, "full_path": "acme"}
+        if path.startswith("/users?username="):
+            return 200, [{"id": 5, "username": "acme"}]
+        raise AssertionError(f"unexpected GET {path}")
+
+    monkey["get"] = get_visible
+    assert validate_mr.namespace_info("acme")["id"] == 5
+
+    # Unknown everywhere -> None (manual review).
+    def get_missing(path):
+        if path.startswith("/namespaces/"):
+            return 404, None
+        if path.startswith("/users?username="):
+            return 200, []
+        raise AssertionError(f"unexpected GET {path}")
+
+    monkey["get"] = get_missing
+    assert validate_mr.namespace_info("acme") is None
+
+    # Only an exact (case-insensitive) username hit counts.
+    def get_substring(path):
+        if path.startswith("/namespaces/"):
+            return 404, None
+        if path.startswith("/users?username="):
+            return 200, [{"id": 6, "username": "acme2"}]
+        raise AssertionError(f"unexpected GET {path}")
+
+    monkey["get"] = get_substring
+    assert validate_mr.namespace_info("acme") is None
+
+    # Groups pass through unchanged (group id == namespace id).
+    monkey["get"] = lambda path: (200, {"kind": "group", "id": 44, "full_path": "platform/ai"})
+    assert validate_mr.namespace_info("platform/ai")["id"] == 44
+
+
 def test_namespace_allowed(monkey) -> None:
     user_ns = {"kind": "user", "id": 9, "full_path": "Acme"}
-    assert validate_mr.namespace_allowed("acme", user_ns, "ACME", 1, 30)
+    assert validate_mr.namespace_allowed("acme", user_ns, "ACME", 9, 30)
+    # Username match alone is not enough — the author id must match too.
+    assert not validate_mr.namespace_allowed("acme", user_ns, "ACME", 1, 30)
     assert not validate_mr.namespace_allowed("acme", user_ns, "mallory", 2, 30)
 
     group_ns = {"kind": "group", "id": 44, "full_path": "platform/ai"}
@@ -149,6 +208,7 @@ def main() -> None:
 
     test_path_rule()
     test_build_validate_owner_keys()
+    test_namespace_info_user_fallback(monkey)
     test_namespace_allowed(monkey)
     test_request_merge(monkey)
     with tempfile.TemporaryDirectory() as tmp:
