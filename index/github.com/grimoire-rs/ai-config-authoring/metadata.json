@@ -1,12 +1,12 @@
 {
-  "schema": 1,
-  "name": "ai-config-authoring",
+  "description": "Craft effective AI agent configuration — skills, rules, agents, and instructions — for any AI coding client. Use when writing or reviewing a SKILL.md, rule file, or agent definition; when deciding between a skill, rule, hook, or always-on instruction; when a config file grows past its context budget; or when a skill description fails to trigger.",
   "kind": "skill",
-  "ref": "ghcr.io/grimoire-rs/skills/ai-config-authoring",
-  "description": "Craft effective AI agent configuration \u2014 skills, rules, agents \u2014 for any AI coding client",
-  "repository": "https://github.com/grimoire-rs/grimoire",
+  "name": "ai-config-authoring",
   "owner": {
     "github": "grimoire-rs",
     "id": 298895348
-  }
+  },
+  "ref": "ghcr.io/grimoire-rs/skills/ai-config-authoring",
+  "repository": "https://github.com/grimoire-rs/grimoire",
+  "schema": 1
 }

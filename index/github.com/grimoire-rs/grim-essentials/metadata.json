@@ -1,12 +1,12 @@
 {
-  "schema": 1,
-  "name": "grim-essentials",
+  "description": "First-party skills: using the grim CLI, vendor-neutral AI-config authoring craft, and grim artifact authoring",
   "kind": "bundle",
-  "ref": "ghcr.io/grimoire-rs/bundles/grim-essentials",
-  "description": "Grimoire first-party starter pack: grim CLI usage, AI-config authoring craft, artifact authoring",
-  "repository": "https://github.com/grimoire-rs/grimoire",
+  "name": "grim-essentials",
   "owner": {
     "github": "grimoire-rs",
     "id": 298895348
-  }
+  },
+  "ref": "ghcr.io/grimoire-rs/bundles/grim-essentials",
+  "repository": "https://github.com/grimoire-rs/grimoire",
+  "schema": 1
 }
