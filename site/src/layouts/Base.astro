@@ -211,16 +211,19 @@ const { title, description } = Astro.props;
       }
 
       .install {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        /* One track set for all rows so the commands start at the same x
+           regardless of OS-label width; rows pick it up via subgrid. */
+        grid-template-columns: auto 1fr auto;
         gap: 0.5rem;
         min-width: 0;
       }
       .install-row {
+        grid-column: 1 / -1;
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: subgrid;
         align-items: center;
-        gap: 0.6rem;
+        column-gap: 0.6rem;
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: 8px;
@@ -247,7 +250,7 @@ const { title, description } = Astro.props;
         display: none;
       }
       @media (max-width: 40rem) {
-        .install-row {
+        .install {
           grid-template-columns: 1fr auto;
         }
         .install-row .os {
