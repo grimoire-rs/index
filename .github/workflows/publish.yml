@@ -27,18 +27,9 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Build index
-        run: python3 scripts/build.py
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: site/package-lock.json
-      - name: Build site
-        run: |
-          npm ci --prefix site
-          npm run build --prefix site
-          cp -a site/dist/. dist/
+      - uses: ocx-sh/setup-ocx@8cd2f38eed07c9b79aaed22e61f9ba6b36e967a3 # v1.2.2
+      - name: Build Pages artifact (index JSON + site)
+        run: task build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
