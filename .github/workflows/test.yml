@@ -1,14 +1,15 @@
 name: test
 
-# Offline self-checks for the validator scripts. Runs on script changes
-# only — announcement PRs are gated by validate-pr.yml instead.
+# Offline self-checks for the validator scripts and a site build smoke
+# test. Runs on script/site changes only — announcement PRs are gated
+# by validate-pr.yml instead.
 
 on:
   push:
     branches: [main]
-    paths: [scripts/**]
+    paths: [scripts/**, site/**]
   pull_request:
-    paths: [scripts/**]
+    paths: [scripts/**, site/**]
 
 permissions:
   contents: read
@@ -28,3 +29,19 @@ jobs:
         run: python3 scripts/test_validate_mr.py
       - name: Build compiles
         run: python3 scripts/build.py
+
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Site builds
+        run: |
+          npm ci --prefix site
+          npm run build --prefix site

@@ -60,9 +60,8 @@ def main() -> None:
         shutil.rmtree(DIST)
     shutil.copytree(INDEX, DIST / "index")
     (DIST / "all.json").write_text(json.dumps(packages, indent=1) + "\n")
-    (DIST / "index.html").write_text(
-        "<meta http-equiv=refresh content='0;url=https://grimoire.rs'>\n"
-    )
+    # The catalog website (site/) supplies index.html; the publish
+    # workflow merges its build output into dist/ after this script.
     print(f"built {len(packages)} packages -> dist/")
 
 
