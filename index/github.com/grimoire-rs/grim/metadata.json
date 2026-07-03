@@ -1,0 +1,12 @@
+{
+  "description": "Grimoire catalog, install status, and artifact content over the Model Context Protocol.",
+  "kind": "mcp",
+  "name": "grim",
+  "owner": {
+    "github": "grimoire-rs",
+    "id": 298895348
+  },
+  "ref": "ghcr.io/grimoire-rs/mcp/grim",
+  "repository": "https://github.com/grimoire-rs/grimoire",
+  "schema": 1
+}
