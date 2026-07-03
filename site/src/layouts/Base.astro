@@ -178,7 +178,14 @@ const { title, description } = Astro.props;
       }
 
       .hero {
-        margin-block: 1.25rem 1.75rem;
+        display: grid;
+        /* fit-content: install column takes what its rows need, but can
+           shrink below content width (commands scroll) before squeezing
+           the text column out. */
+        grid-template-columns: 1fr fit-content(44rem);
+        align-items: center;
+        gap: 0.75rem 2rem;
+        margin-block: 1rem 1.5rem;
       }
       .hero h1 {
         margin: 0 0 0.35rem;
@@ -188,6 +195,11 @@ const { title, description } = Astro.props;
         margin: 0;
         color: var(--muted);
         max-width: 46rem;
+      }
+      @media (max-width: 64rem) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
       }
       .hero code {
         background: var(--chip-bg);
@@ -200,8 +212,7 @@ const { title, description } = Astro.props;
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
-        margin-top: 0.9rem;
-        max-width: 46rem;
+        min-width: 0;
       }
       .install-row {
         display: grid;
