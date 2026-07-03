@@ -196,6 +196,47 @@ const { title, description } = Astro.props;
         font-size: 0.9em;
       }
 
+      .install {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0.9rem;
+        max-width: 46rem;
+      }
+      .install-row {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 0.6rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.45rem 0.7rem;
+      }
+      .install-row .os {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+      }
+      .install-row code {
+        background: none;
+        padding: 0;
+        font-size: 0.85rem;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      @media (max-width: 40rem) {
+        .install-row {
+          grid-template-columns: 1fr auto;
+        }
+        .install-row .os {
+          grid-column: 1 / -1;
+        }
+      }
+
       .controls {
         display: flex;
         flex-wrap: wrap;
