@@ -181,14 +181,16 @@ const { title, description } = Astro.props;
         display: grid;
         /* fit-content: install column takes what its rows need, but can
            shrink below content width (commands scroll) before squeezing
-           the text column out. */
+           the text column out. h1 spans the full row; paragraph and
+           install strip share the second row, top-aligned. */
         grid-template-columns: 1fr fit-content(44rem);
-        align-items: center;
+        align-items: start;
         gap: 0.75rem 2rem;
         margin-block: 1rem 1.5rem;
       }
       .hero h1 {
-        margin: 0 0 0.35rem;
+        grid-column: 1 / -1;
+        margin: 0;
         font-size: 1.6rem;
       }
       .hero p {
@@ -238,6 +240,11 @@ const { title, description } = Astro.props;
         font-size: 0.85rem;
         overflow-x: auto;
         white-space: nowrap;
+        /* still scrollable, no visible bar */
+        scrollbar-width: none;
+      }
+      .install-row code::-webkit-scrollbar {
+        display: none;
       }
       @media (max-width: 40rem) {
         .install-row {
