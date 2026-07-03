@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+# Toolchain (task, node/npm, python3) is pinned in ocx.toml. Locally direnv
+# supplies PATH via .envrc (`direnv allow`); in CI ocx-sh/setup-ocx does.
+# Tasks call binaries directly.
+
+tasks:
+  default:
+    desc: Run the full verify gate
+    cmds:
+      - task: verify
+
+  deps:
+    desc: Install site npm dependencies (npm ci)
+    cmd: npm ci --prefix site
+    sources:
+      - site/package-lock.json
+    generates:
+      - site/node_modules/.package-lock.json
+
+  test:
+    desc: Offline validator self-checks
+    cmd: python3 scripts/test_validate_mr.py
+
+  build:index:
+    desc: Compile index/**/metadata.json into dist/ (all.json + copies)
+    cmd: python3 scripts/build.py
+
+  build:site:
+    desc: Build the Astro catalog site (site/dist)
+    deps: [deps]
+    cmd: npm run build --prefix site
+
+  build:
+    desc: Full Pages artifact — index JSON + site merged into dist/
+    cmds:
+      - task: build:index
+      - task: build:site
+      - cp -a site/dist/. dist/
+
+  serve:
+    desc: Build everything and serve dist/ locally (PORT=8080)
+    cmds:
+      - task: build
+      - python3 -m http.server -d dist {{.PORT | default "8080"}}
+
+  dev:
+    desc: Astro dev server with hot reload (reads index/ live)
+    deps: [deps]
+    cmd: npm run dev --prefix site
+
+  verify:
+    desc: CI gate — validator self-checks + full artifact build
+    cmds:
+      - task: test
+      - task: build
+
+  update:lock:
+    desc: Re-resolve tool tags and rewrite ocx.lock
+    cmd: ocx lock

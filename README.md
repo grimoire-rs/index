@@ -88,6 +88,21 @@ When `index` is set, browse/search reads the index instead of the OCI
 fork of this repository — served as static files or as a plain git
 repo — to run a private index.
 
+## Development
+
+Toolchain (task, node, python) is pinned in [`ocx.toml`](./ocx.toml) and
+bootstrapped by [ocx](https://ocx.sh) — locally via direnv
+(`direnv allow`, PATH comes from `.envrc`), in CI via `ocx-sh/setup-ocx`.
+
+```sh
+task --list   # all tasks
+task verify   # validator self-checks + full artifact build
+task serve    # build and serve the composed dist/ on :8080
+task dev      # Astro dev server with hot reload (site/ only)
+```
+
+Without direnv, prefix commands with `ocx run go-task -- task …`.
+
 ## Running on self-hosted GitLab
 
 Fork or import this repository into your GitLab instance — the shipped

@@ -1,0 +1,44 @@
+[metadata]
+lock_version = 2
+declaration_hash_version = 1
+declaration_hash = "sha256:5ed8d4cf50239aa707fa28d3ae2c5e3ed4ee1f0d12245173fdb6bbd413012ffe"
+generated_by = "ocx 0.3.11"
+generated_at = "2026-07-03T19:29:52Z"
+
+[[tool]]
+name = "cpython"
+group = "default"
+repository = "ocx.sh/cpython"
+
+[tool.platforms]
+"darwin/amd64" = "sha256:c93f1cd08d2eb34f6c0592c9a64bd52babb4f08c686962f202db56eb8872d869"
+"darwin/arm64" = "sha256:1e4f7c0d4161b109ed57c97f7270d3f564ec48d55c66eb393825b34da8ff53e4"
+"linux/amd64" = "sha256:12ca1e633b5ba7fe54994ee88d5e44433bf449c4a6185ceee2c13cbad1c73fd0"
+"linux/arm64" = "sha256:14cfb4b6ce38e96e99734f7e5eb9b5525ec2c8c7a7b19543afb0a1f07cfd4ad2"
+"windows/amd64" = "sha256:8da48ce422629bfcefddd4b49682dc63fac1e46113b47a30cb41ea667988efbb"
+
+[[tool]]
+name = "go-task"
+group = "default"
+repository = "ocx.sh/go-task"
+
+[tool.platforms]
+"darwin/amd64" = "sha256:096c9fd1c8856a41515f5dcc3760e0ff680610aae0861b750cf217315fbe02a9"
+"darwin/arm64" = "sha256:0e0ed9cbeef63f7344e933d1e0c09af46c99abd0824bcfed877b5bd2f6091337"
+"linux/amd64" = "sha256:d3df40ad238fd278bb1529a1230ce186aedd3eb8c0e5d1c495aa9587c188adcf"
+"linux/arm64" = "sha256:78d6b8687428f5f5e2782c11295db4c813d5aab9f0cae0abc86710a2851e51f5"
+"windows/amd64" = "sha256:b3c73b637e0d1e8aaacbefb7696cd65e36016edb571b4f0e3eb919b783079ae1"
+"windows/arm64" = "sha256:d00de6d5a1ae0c8c2f3e639ef72cc5e7ee78c15dc34ee91cf77d8d84f409a365"
+
+[[tool]]
+name = "nodejs"
+group = "default"
+repository = "ocx.sh/nodejs"
+
+[tool.platforms]
+"darwin/amd64" = "sha256:85088057e700ae0cc381032527978fc274c74f3dcd8d47b8c76a03eb01020961"
+"darwin/arm64" = "sha256:cbbba349ae3fddf029a27552c4590286e38c880ba7974f144e9df2ec4a45a26b"
+"linux/amd64" = "sha256:41bfbf6ebd8a26856a2e6bb1cd4c37671270233fc6c93614e5cec305327266b6"
+"linux/arm64" = "sha256:370d4b75abb94c0d87154f1069c2ffeb5953cd326c9ae1188a883efa0727e0db"
+"windows/amd64" = "sha256:554213ed94635a7a39310165551e0e0f5643fd9d02c6ab3b2e19765a9d5a4da3"
+"windows/arm64" = "sha256:e3a6f77f9ecca89a633c9bbdc25c0cad799a3684c483bbd5922fd0361e84021f"

@@ -1,0 +1,4 @@
+[tools]
+cpython = "ocx.sh/cpython:3"
+go-task = "ocx.sh/go-task:3"
+nodejs = "ocx.sh/nodejs:24"
