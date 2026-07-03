@@ -16,7 +16,7 @@ INDEX = ROOT / "index"
 DIST = ROOT / "dist"
 
 REQUIRED = {"schema", "name", "kind", "ref", "description", "owner"}
-KINDS = {"skill", "rule", "agent", "bundle"}
+KINDS = {"skill", "rule", "agent", "mcp", "bundle"}
 
 
 def fail(path: Path, msg: str) -> None:

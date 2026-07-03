@@ -55,6 +55,23 @@ def test_build_validate_owner_keys() -> None:
     assert "owner" in expect_exit(build.validate, path, meta({"login": "acme"}))
 
 
+def test_build_validate_kinds() -> None:
+    def meta(kind: str) -> dict:
+        return {
+            "schema": 1,
+            "name": "tool",
+            "kind": kind,
+            "ref": "reg.example.com/acme/tool",
+            "description": "d",
+            "owner": {"github": "acme", "id": 7},
+        }
+
+    path = Path("index/github.com/acme/tool/metadata.json")
+    for kind in ("skill", "rule", "agent", "mcp", "bundle"):
+        build.validate(path, meta(kind))
+    assert "kind" in expect_exit(build.validate, path, meta("plugin"))
+
+
 def test_namespace_info_user_fallback(monkey) -> None:
     # /namespaces is membership-scoped: a project access token's bot user
     # cannot see foreign namespaces, so user namespaces 404 — fall back to
@@ -208,6 +225,7 @@ def main() -> None:
 
     test_path_rule()
     test_build_validate_owner_keys()
+    test_build_validate_kinds()
     test_namespace_info_user_fallback(monkey)
     test_namespace_allowed(monkey)
     test_request_merge(monkey)

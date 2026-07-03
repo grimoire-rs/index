@@ -41,7 +41,7 @@ the `github.com/` prefix) are reserved and require maintainer approval.
 |---|---|
 | `schema` | Metadata schema version, currently `1` |
 | `name` | Package name — must equal the directory name |
-| `kind` | `skill`, `rule`, `agent`, or `bundle` |
+| `kind` | `skill`, `rule`, `agent`, `mcp`, or `bundle` |
 | `ref` | OCI reference (registry/repository, no tag) grim resolves against |
 | `description` | One line, shown in `grim search` |
 | `repository` | Source repository URL |
