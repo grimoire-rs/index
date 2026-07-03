@@ -1,0 +1,363 @@
+---
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+    <script is:inline>
+      // Before first paint: stored preference wins, else system scheme.
+      document.documentElement.dataset.theme =
+        localStorage.getItem("theme") ??
+        (matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light");
+    </script>
+  </head>
+  <body>
+    <header>
+      <div class="shell header-row">
+        <a class="brand" href="/">
+          <span class="brand-mark">grim</span> package index
+        </a>
+        <nav>
+          <a href="https://grimoire.rs">docs</a>
+          <a
+            href="https://github.com/grimoire-rs/index"
+            target="_blank"
+            rel="noopener noreferrer">GitHub</a
+          >
+          <button id="theme-toggle" type="button" aria-label="Toggle theme">
+            <span class="when-light" aria-hidden="true">🌙</span>
+            <span class="when-dark" aria-hidden="true">☀️</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="shell">
+      <slot />
+    </main>
+
+    <footer>
+      <div class="shell">
+        <p>
+          Raw data: <a href="/all.json"><code>/all.json</code></a> · metadata
+          is <a href="https://creativecommons.org/publicdomain/zero/1.0/"
+            >CC0</a
+          > · pointers, not payloads — packages live on OCI registries
+        </p>
+      </div>
+    </footer>
+
+    <script is:inline>
+      document.getElementById("theme-toggle").addEventListener("click", () => {
+        const root = document.documentElement;
+        const next = root.dataset.theme === "dark" ? "light" : "dark";
+        root.dataset.theme = next;
+        localStorage.setItem("theme", next);
+      });
+    </script>
+
+    <style is:global>
+      :root {
+        --bg: #f7f6f3;
+        --fg: #1d1c1a;
+        --muted: #6d6a63;
+        --card: #ffffff;
+        --border: #dedbd3;
+        --accent: #6d4fc4;
+        --accent-soft: #efeafd;
+        --chip-bg: #edebe5;
+        --kind-skill: #6d4fc4;
+        --kind-rule: #1a7f6b;
+        --kind-agent: #b0641a;
+        --kind-mcp: #2565c7;
+        --kind-bundle: #a63d68;
+        color-scheme: light;
+      }
+      [data-theme="dark"] {
+        --bg: #16151a;
+        --fg: #e8e6e1;
+        --muted: #98948b;
+        --card: #201f26;
+        --border: #35333d;
+        --accent: #a58cf0;
+        --accent-soft: #2c2540;
+        --chip-bg: #2a2931;
+        --kind-skill: #a58cf0;
+        --kind-rule: #4cc2a9;
+        --kind-agent: #e0a35c;
+        --kind-mcp: #6fa8f5;
+        --kind-bundle: #e07ba6;
+        color-scheme: dark;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+        color: var(--fg);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        line-height: 1.55;
+      }
+      .shell {
+        width: min(72rem, 100% - 2.5rem);
+        margin-inline: auto;
+      }
+      main.shell {
+        flex: 1;
+        padding-block: 1.5rem 3rem;
+      }
+      a {
+        color: var(--accent);
+      }
+
+      header {
+        border-bottom: 1px solid var(--border);
+        background: var(--card);
+      }
+      .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-block: 0.8rem;
+        gap: 1rem;
+      }
+      .brand {
+        color: var(--fg);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.05rem;
+      }
+      .brand-mark {
+        color: var(--accent);
+        font-family: ui-monospace, "SFMono-Regular", monospace;
+      }
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      nav a {
+        color: var(--muted);
+        text-decoration: none;
+      }
+      nav a:hover {
+        color: var(--fg);
+      }
+      #theme-toggle {
+        border: 1px solid var(--border);
+        background: transparent;
+        border-radius: 999px;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        line-height: 1;
+      }
+      [data-theme="dark"] .when-light,
+      [data-theme="light"] .when-dark {
+        display: none;
+      }
+
+      .hero {
+        margin-block: 1.25rem 1.75rem;
+      }
+      .hero h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.6rem;
+      }
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 46rem;
+      }
+      .hero code {
+        background: var(--chip-bg);
+        border-radius: 4px;
+        padding: 0.1rem 0.35rem;
+        font-size: 0.9em;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      .controls input[type="search"] {
+        flex: 1 1 16rem;
+        padding: 0.55rem 0.8rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--card);
+        color: var(--fg);
+        font-size: 0.95rem;
+      }
+      .controls input[type="search"]:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+      }
+      .chip {
+        border: 1px solid var(--border);
+        background: var(--chip-bg);
+        color: var(--fg);
+        border-radius: 999px;
+        padding: 0.25rem 0.7rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .chip small {
+        color: var(--muted);
+      }
+      .chip.active {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      .grid {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+        gap: 1rem;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem 1.1rem;
+      }
+      .card-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.6rem;
+      }
+      .card h2 {
+        margin: 0;
+        font-size: 1.05rem;
+        font-family: ui-monospace, "SFMono-Regular", monospace;
+        word-break: break-word;
+      }
+      .badge {
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border: 1px solid currentColor;
+        border-radius: 999px;
+        padding: 0.05rem 0.5rem;
+        color: var(--muted);
+      }
+      .kind-skill {
+        color: var(--kind-skill);
+      }
+      .kind-rule {
+        color: var(--kind-rule);
+      }
+      .kind-agent {
+        color: var(--kind-agent);
+      }
+      .kind-mcp {
+        color: var(--kind-mcp);
+      }
+      .kind-bundle {
+        color: var(--kind-bundle);
+      }
+      .chip[class*="kind-"] {
+        color: var(--fg);
+      }
+      .namespace {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-family: ui-monospace, "SFMono-Regular", monospace;
+      }
+      .description {
+        margin: 0;
+        font-size: 0.92rem;
+        flex: 1;
+      }
+      .card-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        margin-top: 0.5rem;
+      }
+      .copy-group {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .copy {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.32rem;
+        border: 1px solid var(--border);
+        background: var(--chip-bg);
+        color: var(--fg);
+        border-radius: 6px;
+        padding: 0.28rem 0.55rem;
+        font-size: 0.8rem;
+        font-family: ui-monospace, "SFMono-Regular", monospace;
+        cursor: pointer;
+      }
+      .copy:hover {
+        border-color: var(--accent);
+      }
+      .copy.copied {
+        color: var(--kind-rule);
+        border-color: var(--kind-rule);
+      }
+      .source {
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      .empty {
+        color: var(--muted);
+      }
+
+      footer {
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      footer p {
+        margin: 0.8rem 0;
+      }
+      footer a {
+        color: inherit;
+      }
+    </style>
+  </body>
+</html>

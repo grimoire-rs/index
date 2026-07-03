@@ -1,13 +1,23 @@
 ---
+import Base from "../layouts/Base.astro";
+import Catalog from "../components/Catalog.tsx";
+import { loadPackages } from "../lib/catalog";
+
+const packages = loadPackages();
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>grim package index</title>
-  </head>
-  <body>
+<Base
+  title="grim package index"
+  description="Browse and search AI-config packages — skills, rules, agents, MCP servers, and bundles — installable with the grim package manager."
+>
+  <div class="hero">
     <h1>grim package index</h1>
-  </body>
-</html>
+    <p>
+      Skills, rules, agents, MCP servers, and bundles for AI coding agents,
+      hosted on OCI registries. Copy an <code>add</code> command below, or
+      <a href="https://grimoire.rs">install grim</a> to browse from the
+      terminal.
+    </p>
+  </div>
+  <Catalog client:load packages={packages} />
+</Base>
