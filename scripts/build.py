@@ -13,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "index"
+ENRICH = ROOT / "enrich"
 DIST = ROOT / "dist"
 
 REQUIRED = {"schema", "name", "kind", "ref", "description", "owner"}
@@ -50,16 +51,32 @@ def validate(path: Path, meta: dict) -> None:
 
 def main() -> None:
     packages = []
+    logos = []  # (src file, dist-relative dest) for enrichment logo copies
     for path in sorted(INDEX.rglob("metadata.json")):
         meta = json.loads(path.read_text())
         validate(path, meta)
-        meta["namespace"] = str(path.parent.parent.relative_to(INDEX))
+        ns = str(path.parent.parent.relative_to(INDEX))
+        meta["namespace"] = ns
+        data_path = ENRICH / ns / meta["name"] / "data.json"
+        if data_path.exists():
+            data = json.loads(data_path.read_text())
+            data.pop("descDigest", None)  # internal change-probe bookkeeping
+            meta = {**data, **meta}  # index metadata wins on overlap
+            if "logo" in meta:
+                ext = meta["logo"].rsplit(".", 1)[-1]
+                src = data_path.parent / f"logo.{ext}"
+                if src.exists():
+                    logos.append((src, f"{ns}/{meta['name']}.{ext}"))
         packages.append(meta)
 
     if DIST.exists():
         shutil.rmtree(DIST)
     shutil.copytree(INDEX, DIST / "index")
     (DIST / "all.json").write_text(json.dumps(packages, indent=1) + "\n")
+    for src, rel in logos:
+        dst = DIST / "logos" / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
     # The catalog website (site/) supplies index.html; the publish
     # workflow merges its build output into dist/ after this script.
     print(f"built {len(packages)} packages -> dist/")
