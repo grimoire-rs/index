@@ -304,6 +304,10 @@ const { title, description, image = "/favicon.svg" } = Astro.props;
       .chip small {
         color: var(--muted);
       }
+      /* button-only: the "+N" overflow chip is a span and stays inert */
+      button.chip:hover {
+        border-color: var(--accent);
+      }
       .chip.active {
         border-color: var(--accent);
         background: var(--accent-soft);
@@ -330,7 +334,11 @@ const { title, description, image = "/favicon.svg" } = Astro.props;
         position: relative;
         cursor: pointer;
       }
-      .card:hover {
+      /* Card highlight yields while an inner control is hovered, so its
+         own hover state reads as the click target instead. */
+      .card:hover:not(
+          :has(.keywords :hover, .copy-group :hover, .source:hover)
+        ) {
         border-color: var(--accent);
       }
       .card h2 a::after {
