@@ -299,6 +299,7 @@ const { title, description, image = "/favicon.svg" } = Astro.props;
         border-radius: 999px;
         padding: 0.25rem 0.7rem;
         font-size: 0.85rem;
+        transition: border-color 150ms ease;
         cursor: pointer;
       }
       .chip small {
@@ -333,6 +334,7 @@ const { title, description, image = "/favicon.svg" } = Astro.props;
            link below; real controls inside re-stack above the overlay. */
         position: relative;
         cursor: pointer;
+        transition: border-color 150ms ease;
       }
       /* Card highlight yields while an inner control is hovered, so its
          own hover state reads as the click target instead. */
@@ -367,9 +369,6 @@ const { title, description, image = "/favicon.svg" } = Astro.props;
       .card h2 a {
         color: inherit;
         text-decoration: none;
-      }
-      .card h2 a:hover {
-        text-decoration: underline;
       }
       .card-logo {
         flex-shrink: 0;
@@ -487,6 +486,7 @@ const { title, description, image = "/favicon.svg" } = Astro.props;
         display: inline-flex;
         align-items: center;
         gap: 0.32rem;
+        transition: border-color 150ms ease;
         border: 1px solid var(--border);
         background: var(--chip-bg);
         color: var(--fg);
