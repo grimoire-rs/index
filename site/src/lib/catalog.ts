@@ -11,18 +11,32 @@ export interface Package {
   description?: string;
   repository?: string;
   namespace: string;
+  // Enrichment sidecar (enrich/<namespace>/<name>/data.json), refreshed by
+  // CI from the registry. All optional: the catalog renders without them.
+  title?: string;
+  summary?: string;
+  version?: string;
+  license?: string;
+  keywords?: string[];
+  created?: string;
+  deprecated?: string | null;
+  replacedBy?: string;
+  tags?: string[];
+  logo?: string;
+  hasReadme?: boolean;
+  hasChangelog?: boolean;
 }
 
 // import.meta.url is rewritten to the bundled chunk path at build time, so
 // locate the repo root by walking up from cwd (works from site/ and root).
-function indexDir(): string {
+function repoRoot(): string {
   let dir = process.cwd();
   for (;;) {
     if (
       fs.existsSync(path.join(dir, "index")) &&
       fs.existsSync(path.join(dir, "scripts", "build.py"))
     ) {
-      return path.join(dir, "index");
+      return dir;
     }
     const parent = path.dirname(dir);
     if (parent === dir) {
@@ -33,7 +47,8 @@ function indexDir(): string {
 }
 
 export function loadPackages(): Package[] {
-  const INDEX_DIR = indexDir();
+  const ROOT = repoRoot();
+  const INDEX_DIR = path.join(ROOT, "index");
   const entries = fs.readdirSync(INDEX_DIR, {
     recursive: true,
     withFileTypes: true,
@@ -47,7 +62,14 @@ export function loadPackages(): Package[] {
       .relative(INDEX_DIR, path.dirname(path.dirname(file)))
       .split(path.sep)
       .join("/");
+    // Sidecar fields spread first so the announcement-owned index metadata
+    // always wins on overlap.
+    const enrichFile = path.join(ROOT, "enrich", namespace, meta.name, "data.json");
+    const enrich = fs.existsSync(enrichFile)
+      ? JSON.parse(fs.readFileSync(enrichFile, "utf8"))
+      : {};
     packages.push({
+      ...enrich,
       name: meta.name,
       kind: meta.kind,
       ref: meta.ref,
