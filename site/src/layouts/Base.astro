@@ -325,6 +325,23 @@ const { title, description, image = "/favicon.svg" } = Astro.props;
         border: 1px solid var(--border);
         border-radius: 10px;
         padding: 1rem 1.1rem;
+        /* Whole card navigates to the detail page via the stretched title
+           link below; real controls inside re-stack above the overlay. */
+        position: relative;
+        cursor: pointer;
+      }
+      .card:hover {
+        border-color: var(--accent);
+      }
+      .card h2 a::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+      .card .keywords,
+      .card .copy-group,
+      .card .source {
+        position: relative;
       }
       .card-head {
         display: flex;
