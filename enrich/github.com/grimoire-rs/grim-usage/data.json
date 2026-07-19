@@ -1,0 +1,43 @@
+{
+ "title": "grim-usage",
+ "summary": "How to use the grim CLI end to end",
+ "version": "0.10.0",
+ "license": "Apache-2.0",
+ "created": "2026-07-19T12:56:55+02:00",
+ "keywords": [
+  "grim",
+  "grimoire",
+  "cli",
+  "oci",
+  "registry",
+  "install",
+  "update",
+  "publish",
+  "skills",
+  "rules",
+  "agents",
+  "bundles",
+  "mcp",
+  "multi-registry"
+ ],
+ "tags": [
+  "0",
+  "0.10",
+  "0.10.0",
+  "0.6",
+  "0.6.0",
+  "0.8",
+  "0.8.0",
+  "0.8.2",
+  "0.8.4",
+  "0.9",
+  "0.9.0",
+  "0.9.1",
+  "latest"
+ ],
+ "deprecated": null,
+ "descDigest": "sha256:1076e9c9696c7b5a7882093f4b1316be5193f62a5078a45204255cf67be82b7a",
+ "hasReadme": true,
+ "hasChangelog": true,
+ "logo": "/logos/github.com/grimoire-rs/grim-usage.svg"
+}

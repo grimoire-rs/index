@@ -1,0 +1,34 @@
+{
+ "title": "grim-essentials",
+ "summary": "Grimoire first-party starter pack",
+ "version": "0.10.0",
+ "license": "Apache-2.0",
+ "created": "2026-07-19T12:56:55+02:00",
+ "keywords": [
+  "grimoire",
+  "grim",
+  "skills",
+  "authoring",
+  "ai-config",
+  "oci",
+  "starter"
+ ],
+ "tags": [
+  "0",
+  "0.1",
+  "0.1.1",
+  "0.10",
+  "0.10.0",
+  "0.8",
+  "0.8.4",
+  "0.9",
+  "0.9.0",
+  "0.9.1",
+  "latest"
+ ],
+ "deprecated": null,
+ "descDigest": "sha256:461c6afb8f290f30d8d57ae3d3d77b74cbf5b7963867b209385471a80055d713",
+ "hasReadme": true,
+ "hasChangelog": true,
+ "logo": "/logos/github.com/grimoire-rs/grim-essentials.svg"
+}

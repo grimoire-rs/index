@@ -1,0 +1,35 @@
+{
+ "title": "grim",
+ "summary": "grim as an MCP server (search, status, fetch, describe; render behind --allow-writes)",
+ "version": "0.10.0",
+ "license": "Apache-2.0",
+ "created": "2026-07-19T12:56:55+02:00",
+ "keywords": [
+  "grimoire",
+  "mcp",
+  "catalog",
+  "search",
+  "status",
+  "fetch",
+  "describe",
+  "render"
+ ],
+ "tags": [
+  "0",
+  "0.10",
+  "0.10.0",
+  "0.2",
+  "0.2.0",
+  "0.8",
+  "0.8.4",
+  "0.9",
+  "0.9.0",
+  "0.9.1",
+  "latest"
+ ],
+ "deprecated": null,
+ "descDigest": "sha256:497524083473942b438406d6fbc9c73925392d1674e2e3b8a71cedab99e07b80",
+ "hasReadme": true,
+ "hasChangelog": true,
+ "logo": "/logos/github.com/grimoire-rs/grim.svg"
+}
