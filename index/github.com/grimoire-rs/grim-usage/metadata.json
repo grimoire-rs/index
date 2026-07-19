@@ -1,5 +1,21 @@
 {
-  "description": "Drive the grim CLI — the OCI package manager for AI skills, rules, agents, and bundles. Use when installing, updating, searching, or publishing AI-config artifacts with grim; when composing grim init, config, add, lock, install, update, status, search, tui, mcp, build, release, publish, login, or logout commands; when configuring settings, multiple registries, or qualified alias/repo references; or when resolving registries, project vs global scope, client targets, or offline mode.",
+  "description": "Drive the grim CLI — the OCI package manager for AI skills, rules, agents, and bundles. Use when installing, updating, searching, or publishing AI-config artifacts with grim; when composing grim init, config, add, lock, install, update, status, context, fetch, describe, search, tui, mcp, build, release, publish, login, or logout commands; when configuring settings, multiple registries, or qualified alias/repo references; or when resolving registries, project vs global scope, client targets, or offline mode.",
+  "keywords": [
+    "grim",
+    "grimoire",
+    "cli",
+    "oci",
+    "registry",
+    "install",
+    "update",
+    "publish",
+    "skills",
+    "rules",
+    "agents",
+    "bundles",
+    "mcp",
+    "multi-registry"
+  ],
   "kind": "skill",
   "name": "grim-usage",
   "owner": {
@@ -8,5 +24,6 @@
   },
   "ref": "ghcr.io/grimoire-rs/skills/grim-usage",
   "repository": "https://github.com/grimoire-rs/grimoire",
-  "schema": 1
+  "schema": 1,
+  "summary": "How to use the grim CLI end to end"
 }

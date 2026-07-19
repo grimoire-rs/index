@@ -1,5 +1,15 @@
 {
-  "description": "Grimoire catalog, install status, and artifact content over the Model Context Protocol.",
+  "description": "Grimoire catalog, install status, artifact content, and artifact metadata over the Model Context Protocol.",
+  "keywords": [
+    "grimoire",
+    "mcp",
+    "catalog",
+    "search",
+    "status",
+    "fetch",
+    "describe",
+    "render"
+  ],
   "kind": "mcp",
   "name": "grim",
   "owner": {
@@ -8,5 +18,6 @@
   },
   "ref": "ghcr.io/grimoire-rs/mcp/grim",
   "repository": "https://github.com/grimoire-rs/grimoire",
-  "schema": 1
+  "schema": 1,
+  "summary": "grim as an MCP server (search, status, fetch, describe; render behind --allow-writes)"
 }

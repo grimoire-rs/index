@@ -1,5 +1,14 @@
 {
   "description": "First-party skills: using the grim CLI, vendor-neutral AI-config authoring craft, and grim artifact authoring",
+  "keywords": [
+    "grimoire",
+    "grim",
+    "skills",
+    "authoring",
+    "ai-config",
+    "oci",
+    "starter"
+  ],
   "kind": "bundle",
   "name": "grim-essentials",
   "owner": {
@@ -8,5 +17,6 @@
   },
   "ref": "ghcr.io/grimoire-rs/bundles/grim-essentials",
   "repository": "https://github.com/grimoire-rs/grimoire",
-  "schema": 1
+  "schema": 1,
+  "summary": "Grimoire first-party starter pack"
 }
