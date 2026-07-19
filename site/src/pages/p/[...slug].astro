@@ -1,0 +1,372 @@
+---
+import Base from "../../layouts/Base.astro";
+import { loadPackages, type Package } from "../../lib/catalog";
+import { getEntry, render } from "astro:content";
+
+export function getStaticPaths() {
+  return loadPackages().map((pkg) => ({
+    params: { slug: `${pkg.namespace}/${pkg.name}` },
+    props: { pkg },
+  }));
+}
+
+const { pkg } = Astro.props as { pkg: Package };
+const id = `${pkg.namespace}/${pkg.name}`;
+
+const readmeEntry = await getEntry("readmes", id);
+const changelogEntry = await getEntry("changelogs", id);
+const Readme = readmeEntry ? (await render(readmeEntry)).Content : null;
+const Changelog = changelogEntry ? (await render(changelogEntry)).Content : null;
+
+// Tags are published version strings (e.g. "v1.2.0"); sort latest first,
+// numeric-aware so "1.10.0" outranks "1.9.0".
+function compareVersions(a: string, b: string): number {
+  const parts = (s: string) => s.replace(/^v/i, "").split(/[.-]/);
+  const pa = parts(a);
+  const pb = parts(b);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const [na, nb] = [Number(pa[i]), Number(pb[i])];
+    if (!Number.isNaN(na) && !Number.isNaN(nb)) {
+      if (na !== nb) return nb - na;
+    } else if (pa[i] !== pb[i]) {
+      return (pb[i] ?? "").localeCompare(pa[i] ?? "");
+    }
+  }
+  return 0;
+}
+const tags = [...(pkg.tags ?? [])].sort(compareVersions);
+
+const title = pkg.title ?? pkg.name;
+const description = pkg.summary ?? pkg.description ?? `${pkg.kind} package: ${pkg.ref}`;
+const vscodeUrl = `vscode://grimoire-rs.grimoire-vscode/open?repo=${encodeURIComponent(pkg.ref)}`;
+---
+
+<Base title={`${title} — grim package index`} description={description} image={pkg.logo}>
+  <div class="detail">
+    <header class="detail-head">
+      {
+        pkg.logo ? (
+          <img class="tile logo" src={pkg.logo} alt="" />
+        ) : (
+          <div class="tile letter" style={`background: var(--kind-${pkg.kind}, var(--muted))`}>
+            {pkg.name[0]?.toUpperCase()}
+          </div>
+        )
+      }
+      <div class="detail-head-text">
+        <h1>
+          {pkg.name} <span class={`badge kind-${pkg.kind}`}>{pkg.kind}</span>
+        </h1>
+        {description && <p class="summary">{description}</p>}
+      </div>
+    </header>
+
+    {
+      pkg.deprecated && (
+        <p class="deprecated-banner">
+          ⚠️ deprecated{pkg.replacedBy ? ` — replaced by ${pkg.replacedBy}` : ""}
+        </p>
+      )
+    }
+
+    <div class="install-row">
+      <code>grim add {pkg.ref}</code>
+      <button
+        type="button"
+        class="copy"
+        data-copy={`grim add ${pkg.ref}`}
+        aria-label="Copy the install command"
+      >
+        <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
+          />
+          <path
+            fill="currentColor"
+            d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
+          />
+        </svg>
+        <span>copy</span>
+      </button>
+    </div>
+
+    <div class="detail-body">
+      <main class="detail-main">
+        {Readme ? <Readme /> : <p class="empty">No README available.</p>}
+        {
+          Changelog && (
+            <details class="changelog">
+              <summary>Changelog</summary>
+              <Changelog />
+            </details>
+          )
+        }
+      </main>
+
+      <aside class="detail-rail">
+        {tags.length > 0 && (
+          <section>
+            <h2>Versions</h2>
+            <ul class="tag-list">
+              {tags.map((tag) => (
+                <li>
+                  <code>{tag}</code>
+                  <button
+                    type="button"
+                    class="copy"
+                    data-copy={`grim add ${pkg.ref}:${tag}`}
+                    aria-label={`Copy install command for ${tag}`}
+                  >
+                    <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
+                      />
+                    </svg>
+                    <span>copy</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <section>
+          <h2>Details</h2>
+          <dl>
+            {pkg.license && (
+              <>
+                <dt>License</dt>
+                <dd>{pkg.license}</dd>
+              </>
+            )}
+            {pkg.repository && (
+              <>
+                <dt>Repository</dt>
+                <dd>
+                  <a href={pkg.repository} target="_blank" rel="noopener noreferrer">
+                    source
+                  </a>
+                </dd>
+              </>
+            )}
+            {pkg.owner?.github && (
+              <>
+                <dt>Owner</dt>
+                <dd>
+                  <a
+                    href={`https://github.com/${pkg.owner.github}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {pkg.owner.github}
+                  </a>
+                </dd>
+              </>
+            )}
+          </dl>
+          {pkg.keywords && pkg.keywords.length > 0 && (
+            <ul class="keywords">
+              {pkg.keywords.map((k) => (
+                <li>{k}</li>
+              ))}
+            </ul>
+          )}
+          <a class="vscode-link" href={vscodeUrl}>
+            Open in VS Code
+          </a>
+        </section>
+      </aside>
+    </div>
+  </div>
+</Base>
+
+<script>
+  for (const btn of document.querySelectorAll<HTMLButtonElement>("button[data-copy]")) {
+    btn.addEventListener("click", () => {
+      navigator.clipboard.writeText(btn.dataset.copy ?? "").then(() => {
+        const label = btn.querySelector("span");
+        btn.classList.add("copied");
+        if (label) label.textContent = "copied";
+        setTimeout(() => {
+          btn.classList.remove("copied");
+          if (label) label.textContent = "copy";
+        }, 1500);
+      });
+    });
+  }
+</script>
+
+<style>
+  .detail {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .detail-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .tile {
+    flex-shrink: 0;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  .tile.letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: ui-monospace, "SFMono-Regular", monospace;
+  }
+  .detail-head-text h1 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.5rem;
+    font-family: ui-monospace, "SFMono-Regular", monospace;
+  }
+  .summary {
+    margin: 0.3rem 0 0;
+    color: var(--muted);
+  }
+  .deprecated-banner {
+    margin: 0;
+    background: #fff3cd;
+    color: #6b4c00;
+    border: 1px solid #e0b84c;
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    font-weight: 600;
+  }
+  [data-theme="dark"] .deprecated-banner {
+    background: #4a3b0a;
+    color: #f0d78c;
+    border-color: #8a6d1a;
+  }
+  .install-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+  }
+  .install-row code {
+    font-size: 0.9rem;
+    overflow-x: auto;
+  }
+  .detail-body {
+    display: grid;
+    grid-template-columns: 1fr 18rem;
+    gap: 2rem;
+    align-items: start;
+  }
+  @media (max-width: 55rem) {
+    .detail-body {
+      grid-template-columns: 1fr;
+    }
+  }
+  .detail-main {
+    min-width: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+  }
+  .detail-main :global(img) {
+    max-width: 100%;
+  }
+  .detail-main :global(pre) {
+    overflow-x: auto;
+  }
+  .changelog {
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+  .changelog summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .detail-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .detail-rail section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+  .detail-rail h2 {
+    margin: 0 0 0.6rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .tag-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .tag-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .tag-list code {
+    font-size: 0.85rem;
+  }
+  dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.3rem 0.6rem;
+  }
+  dt {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  dd {
+    margin: 0;
+  }
+  .keywords {
+    list-style: none;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .keywords li {
+    background: var(--chip-bg);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.78rem;
+  }
+  .vscode-link {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+</style>
