@@ -11,6 +11,7 @@ export interface Package {
   description?: string;
   repository?: string;
   namespace: string;
+  owner?: { github: string; id?: number };
   // Enrichment sidecar (enrich/<namespace>/<name>/data.json), refreshed by
   // CI from the registry. All optional: the catalog renders without them.
   title?: string;
@@ -29,7 +30,7 @@ export interface Package {
 
 // import.meta.url is rewritten to the bundled chunk path at build time, so
 // locate the repo root by walking up from cwd (works from site/ and root).
-function repoRoot(): string {
+export function repoRoot(): string {
   let dir = process.cwd();
   for (;;) {
     if (
@@ -76,6 +77,7 @@ export function loadPackages(): Package[] {
       description: meta.description,
       repository: meta.repository,
       namespace,
+      owner: meta.owner,
     });
   }
   return packages.sort((a, b) => a.name.localeCompare(b.name));
