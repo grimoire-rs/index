@@ -401,6 +401,16 @@ const { title, description } = Astro.props;
         color: var(--kind-rule);
         border-color: var(--kind-rule);
       }
+      /* card actions: icon-only square buttons. Scoped to .copy-group so the
+         hero install buttons (also .copy, elsewhere) keep their text label. */
+      .copy-group .copy {
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        gap: 0;
+        text-decoration: none;
+      }
       .source {
         font-size: 0.85rem;
         white-space: nowrap;
