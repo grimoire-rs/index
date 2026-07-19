@@ -80,3 +80,24 @@ export function loadPackages(): Package[] {
   }
   return packages.sort((a, b) => a.name.localeCompare(b.name));
 }
+
+// MDN-standard Intl.RelativeTimeFormat rollup (no date library).
+const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+const TIME_DIVISIONS: [number, Intl.RelativeTimeFormatUnit][] = [
+  [60, "seconds"],
+  [60, "minutes"],
+  [24, "hours"],
+  [7, "days"],
+  [4.34524, "weeks"],
+  [12, "months"],
+  [Infinity, "years"],
+];
+
+export function timeAgo(iso: string): string {
+  let duration = (new Date(iso).getTime() - Date.now()) / 1000;
+  for (const [amount, unit] of TIME_DIVISIONS) {
+    if (Math.abs(duration) < amount) return RTF.format(Math.round(duration), unit);
+    duration /= amount;
+  }
+  return RTF.format(Math.round(duration), "years");
+}

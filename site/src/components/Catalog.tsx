@@ -1,5 +1,5 @@
 import { useMemo, useState } from "preact/hooks";
-import type { Package } from "../lib/catalog";
+import { timeAgo, type Package } from "../lib/catalog";
 
 // Known kinds get stable chip ordering + badge colors; unknown kinds
 // (future schema growth) still render with a neutral badge.
@@ -8,6 +8,18 @@ const KNOWN_KINDS = ["skill", "rule", "agent", "mcp", "bundle"];
 function kindOrder(kind: string): number {
   const i = KNOWN_KINDS.indexOf(kind);
   return i === -1 ? KNOWN_KINDS.length : i;
+}
+
+type Sort = "name" | "updated";
+
+// Deprecated packages sink to the bottom regardless of sort mode; the
+// chosen sort only orders within the two groups.
+function compare(a: Package, b: Package, sort: Sort): number {
+  const dep = Number(!!a.deprecated) - Number(!!b.deprecated);
+  if (dep !== 0) return dep;
+  if (sort === "name") return a.name.localeCompare(b.name);
+  if (!a.created || !b.created) return (a.created ? 0 : 1) - (b.created ? 0 : 1);
+  return new Date(b.created).getTime() - new Date(a.created).getTime();
 }
 
 function CopyButton({
@@ -76,6 +88,7 @@ function CopyButton({
 export default function Catalog({ packages }: { packages: Package[] }) {
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<string | null>(null);
+  const [sort, setSort] = useState<Sort>("name");
 
   const kinds = useMemo(() => {
     const counts = new Map<string, number>();
@@ -86,13 +99,21 @@ export default function Catalog({ packages }: { packages: Package[] }) {
   }, [packages]);
 
   const q = query.trim().toLowerCase();
-  const shown = packages.filter((p) => {
-    if (kind && p.kind !== kind) return false;
-    if (!q) return true;
-    return [p.name, p.description ?? "", p.namespace, p.kind, p.ref].some(
-      (field) => field.toLowerCase().includes(q),
-    );
-  });
+  const shown = packages
+    .filter((p) => {
+      if (kind && p.kind !== kind) return false;
+      if (!q) return true;
+      return [
+        p.name,
+        p.description ?? "",
+        p.namespace,
+        p.kind,
+        p.ref,
+        p.summary ?? "",
+        (p.keywords ?? []).join(" "),
+      ].some((field) => field.toLowerCase().includes(q));
+    })
+    .sort((a, b) => compare(a, b, sort));
 
   return (
     <section>
@@ -104,6 +125,22 @@ export default function Catalog({ packages }: { packages: Package[] }) {
           onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
           aria-label="Search packages"
         />
+        <div class="chips" role="group" aria-label="Sort by">
+          <button
+            type="button"
+            class={sort === "name" ? "chip active" : "chip"}
+            onClick={() => setSort("name")}
+          >
+            name
+          </button>
+          <button
+            type="button"
+            class={sort === "updated" ? "chip active" : "chip"}
+            onClick={() => setSort("updated")}
+          >
+            updated
+          </button>
+        </div>
         <div class="chips" role="group" aria-label="Filter by kind">
           <button
             type="button"
@@ -132,11 +169,64 @@ export default function Catalog({ packages }: { packages: Package[] }) {
           {shown.map((p) => (
             <li key={`${p.namespace}/${p.name}`} class="card">
               <div class="card-head">
-                <h2>{p.name}</h2>
-                <span class={`badge kind-${p.kind}`}>{p.kind}</span>
+                {p.logo ? (
+                  <img class="card-logo" src={p.logo} alt="" loading="lazy" />
+                ) : (
+                  <span
+                    class="card-logo card-logo-fallback"
+                    aria-hidden="true"
+                    style={{ background: `var(--kind-${p.kind}, var(--muted))` }}
+                  >
+                    {p.name[0]?.toUpperCase()}
+                  </span>
+                )}
+                <h2>
+                  <a href={`/p/${p.namespace}/${p.name}/`}>{p.name}</a>
+                </h2>
+                {p.deprecated ? (
+                  <span class="badge deprecated">deprecated</span>
+                ) : (
+                  <span class={`badge kind-${p.kind}`}>{p.kind}</span>
+                )}
               </div>
               <p class="namespace">{p.namespace}</p>
+              {(p.version || p.license || p.created) && (
+                <div class="meta-row">
+                  {p.version && <span class="pill version">v{p.version}</span>}
+                  {p.license && <span class="pill license">{p.license}</span>}
+                  {p.created && (
+                    <time class="updated" datetime={p.created} title={p.created}>
+                      updated {timeAgo(p.created)}
+                    </time>
+                  )}
+                </div>
+              )}
+              {p.deprecated && (
+                <p class="deprecated-strip">
+                  deprecated
+                  {p.replacedBy ? ` — replaced by ${p.replacedBy}` : ""}
+                </p>
+              )}
               {p.description && <p class="description">{p.description}</p>}
+              {p.keywords && p.keywords.length > 0 && (
+                <div class="keywords">
+                  {p.keywords.slice(0, 5).map((kw) => (
+                    <button
+                      key={kw}
+                      type="button"
+                      class="chip keyword"
+                      onClick={() => setQuery(kw)}
+                    >
+                      {kw}
+                    </button>
+                  ))}
+                  {p.keywords.length > 5 && (
+                    <span class="chip keyword overflow">
+                      +{p.keywords.length - 5}
+                    </span>
+                  )}
+                </div>
+              )}
               <div class="card-foot">
                 <div class="copy-group">
                   <CopyButton command={`grim add ${p.ref}`} />
