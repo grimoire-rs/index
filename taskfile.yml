@@ -23,6 +23,10 @@ tasks:
     desc: Offline validator self-checks
     cmd: python3 scripts/test_validate_mr.py
 
+  enrich:
+    desc: Refresh enrich/ sidecars from the live registry (online; CI-scheduled)
+    cmd: python3 scripts/enrich.py
+
   build:index:
     desc: Compile index/**/metadata.json into dist/ (all.json + copies)
     cmd: python3 scripts/build.py
