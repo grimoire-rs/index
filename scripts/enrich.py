@@ -54,6 +54,14 @@ def _decode(member: dict) -> bytes:
     return base64.b64decode(c) if member.get("encoding") == "base64" else c.encode()
 
 
+def _clean_companions(out: Path) -> None:
+    """Drop stale companion files; the caller rewrites whatever still exists
+    upstream. Without this, content removed from the registry would keep
+    rendering forever (the detail page globs files, not data.json flags)."""
+    for old in (*out.glob("logo.*"), out / "readme.md", out / "changelog.md"):
+        old.unlink(missing_ok=True)
+
+
 def enrich(ref: str, namespace: str, name: str) -> None:
     out = ENRICH / namespace / name
     existing = {}
@@ -68,8 +76,7 @@ def enrich(ref: str, namespace: str, name: str) -> None:
         if digest != existing.get("descDigest"):  # first-seen or changed
             out.mkdir(parents=True, exist_ok=True)
             files = grim_json("fetch", ref, "--description")["files"]
-            for old in out.glob("logo.*"):
-                old.unlink()
+            _clean_companions(out)
             has_readme = has_changelog = False
             logo = None
             for m in files:
@@ -95,7 +102,9 @@ def enrich(ref: str, namespace: str, name: str) -> None:
             data["hasChangelog"] = existing.get("hasChangelog", False)
             if existing.get("logo"):
                 data["logo"] = existing["logo"]
-    else:
+    else:  # description companion gone entirely: clear its leftovers too
+        if out.exists():
+            _clean_companions(out)
         data["hasReadme"] = False
         data["hasChangelog"] = False
 

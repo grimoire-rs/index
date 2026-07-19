@@ -1,7 +1,8 @@
 name: enrich
 
 # Refresh the committed enrich/ sidecars from the live registry, then commit
-# any change. publish.yml (push to main) auto-redeploys the site afterward.
+# any change and dispatch publish.yml (GITHUB_TOKEN pushes do not retrigger
+# push workflows, same caveat validate-pr.yml handles).
 # This is the only online workflow; test.yml and validate-pr.yml stay offline.
 
 on:
@@ -11,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  actions: write # dispatch publish.yml after the bot commit
 
 concurrency:
   group: enrich
@@ -39,6 +41,8 @@ jobs:
         run: python3 scripts/enrich.py
 
       - name: Commit changes
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain enrich/)" ]; then
@@ -49,3 +53,5 @@ jobs:
           git add enrich/
           git commit -m 'chore(enrich): refresh registry sidecars'
           git push
+          # GITHUB_TOKEN pushes skip push-triggered workflows; deploy explicitly.
+          gh workflow run publish.yml --repo "$GITHUB_REPOSITORY" --ref main

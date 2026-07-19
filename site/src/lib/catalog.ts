@@ -64,9 +64,10 @@ export function loadPackages(): Package[] {
       .split(path.sep)
       .join("/");
     // Sidecar fields spread first so the announcement-owned index metadata
-    // always wins on overlap.
+    // always wins on overlap. descDigest is CI bookkeeping — never ship it
+    // (mirrors build.py's pop before all.json).
     const enrichFile = path.join(ROOT, "enrich", namespace, meta.name, "data.json");
-    const enrich = fs.existsSync(enrichFile)
+    const { descDigest: _descDigest, ...enrich } = fs.existsSync(enrichFile)
       ? JSON.parse(fs.readFileSync(enrichFile, "utf8"))
       : {};
     packages.push({
@@ -96,7 +97,9 @@ const TIME_DIVISIONS: [number, Intl.RelativeTimeFormatUnit][] = [
 ];
 
 export function timeAgo(iso: string): string {
-  let duration = (new Date(iso).getTime() - Date.now()) / 1000;
+  const ms = new Date(iso).getTime();
+  if (!Number.isFinite(ms)) return ""; // unparseable: caller hides the element
+  let duration = (ms - Date.now()) / 1000;
   for (const [amount, unit] of TIME_DIVISIONS) {
     if (Math.abs(duration) < amount) return RTF.format(Math.round(duration), unit);
     duration /= amount;

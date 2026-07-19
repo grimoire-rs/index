@@ -194,7 +194,7 @@ export default function Catalog({ packages }: { packages: Package[] }) {
                 <div class="meta-row">
                   {p.version && <span class="pill version">v{p.version}</span>}
                   {p.license && <span class="pill license">{p.license}</span>}
-                  {p.created && (
+                  {p.created && timeAgo(p.created) && (
                     <time class="updated" datetime={p.created} title={p.created}>
                       updated {timeAgo(p.created)}
                     </time>
