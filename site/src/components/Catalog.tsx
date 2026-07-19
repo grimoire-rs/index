@@ -10,7 +10,13 @@ function kindOrder(kind: string): number {
   return i === -1 ? KNOWN_KINDS.length : i;
 }
 
-function CopyButton({ command, label }: { command: string; label: string }) {
+function CopyButton({
+  command,
+  variant = "default",
+}: {
+  command: string;
+  variant?: "default" | "global";
+}) {
   const [copied, setCopied] = useState(false);
   const copy = () => {
     navigator.clipboard.writeText(command).then(() => {
@@ -33,6 +39,24 @@ function CopyButton({ command, label }: { command: string; label: string }) {
             d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 1 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"
           />
         </svg>
+      ) : variant === "global" ? (
+        <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+          <g transform="scale(0.7)">
+            <path
+              fill="currentColor"
+              d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
+            />
+            <path
+              fill="currentColor"
+              d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
+            />
+          </g>
+          <g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+            <circle cx="12.6" cy="12.6" r="3.1" />
+            <path d="M9.5 12.6h6.2" />
+            <path d="M12.6 9.5v6.2" />
+          </g>
+        </svg>
       ) : (
         <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
           <path
@@ -45,7 +69,6 @@ function CopyButton({ command, label }: { command: string; label: string }) {
           />
         </svg>
       )}
-      <span>{copied ? "copied" : label}</span>
     </button>
   );
 }
@@ -116,11 +139,24 @@ export default function Catalog({ packages }: { packages: Package[] }) {
               {p.description && <p class="description">{p.description}</p>}
               <div class="card-foot">
                 <div class="copy-group">
-                  <CopyButton command={`grim add ${p.ref}`} label="add" />
+                  <CopyButton command={`grim add ${p.ref}`} />
                   <CopyButton
                     command={`grim add --global ${p.ref}`}
-                    label="add --global"
+                    variant="global"
                   />
+                  <a
+                    class="copy vscode"
+                    href={`vscode://grimoire-rs.grimoire-vscode/open?repo=${encodeURIComponent(p.ref)}`}
+                    title="Open in VS Code (Grimoire extension)"
+                    aria-label={`Open ${p.name} in VS Code`}
+                  >
+                    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                      <path
+                        fill="currentColor"
+                        d="M23.15 2.587L18.21.21a1.494 1.494 0 0 0-1.705.29l-9.46 8.63-4.12-3.128a.999.999 0 0 0-1.276.057L.327 7.261A1 1 0 0 0 .326 8.74L3.899 12l-3.573 3.26a1 1 0 0 0 .001 1.479L1.65 17.94a.999.999 0 0 0 1.276.057l4.12-3.128 9.46 8.63a1.492 1.492 0 0 0 1.704.29l4.942-2.377A1.5 1.5 0 0 0 24 20.06V3.939a1.5 1.5 0 0 0-.85-1.352zm-5.146 14.861L10.826 12l7.178-5.448v10.896z"
+                      />
+                    </svg>
+                  </a>
                 </div>
                 {p.repository && (
                   <a
