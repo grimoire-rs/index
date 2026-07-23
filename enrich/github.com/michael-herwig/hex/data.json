@@ -1,0 +1,26 @@
+{
+ "title": "hex",
+ "summary": "Tiered multi-agent swarm orchestration: plan, execute, review, architect",
+ "version": "0.1.0",
+ "license": "Apache-2.0",
+ "keywords": [
+  "swarm",
+  "orchestration",
+  "multi-agent",
+  "planning",
+  "tdd",
+  "review",
+  "architecture"
+ ],
+ "tags": [
+  "0",
+  "0.1",
+  "0.1.0",
+  "latest"
+ ],
+ "deprecated": null,
+ "descDigest": "sha256:9cb7c3e4574466b14aeed34f4b42fe35f82f60b626e76a29afea8071e561a983",
+ "hasReadme": true,
+ "hasChangelog": true,
+ "logo": "/logos/github.com/michael-herwig/hex.svg"
+}

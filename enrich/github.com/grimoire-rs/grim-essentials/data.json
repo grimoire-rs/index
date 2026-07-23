@@ -1,9 +1,9 @@
 {
  "title": "grim-essentials",
  "summary": "Grimoire first-party starter pack",
- "version": "0.10.0",
+ "version": "0.11.1",
  "license": "Apache-2.0",
- "created": "2026-07-19T12:56:55+02:00",
+ "created": "2026-07-23T08:08:35+02:00",
  "keywords": [
   "grimoire",
   "grim",
@@ -19,6 +19,9 @@
   "0.1.1",
   "0.10",
   "0.10.0",
+  "0.11",
+  "0.11.0",
+  "0.11.1",
   "0.8",
   "0.8.4",
   "0.9",
@@ -27,7 +30,7 @@
   "latest"
  ],
  "deprecated": null,
- "descDigest": "sha256:461c6afb8f290f30d8d57ae3d3d77b74cbf5b7963867b209385471a80055d713",
+ "descDigest": "sha256:7a48761b8f1b074a3c3de8459bbe5789d95cc2ad58c7d4e063a62cb4a75bbf4b",
  "hasReadme": true,
  "hasChangelog": true,
  "logo": "/logos/github.com/grimoire-rs/grim-essentials.svg"

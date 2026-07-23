@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="arcana-outer" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A78BFA"/>
+      <stop offset="1" stop-color="#6D28D9"/>
+    </linearGradient>
+    <linearGradient id="arcana-inner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EDE9FE"/>
+      <stop offset="1" stop-color="#C4B5FD"/>
+    </linearGradient>
+  </defs>
+  <!-- outer flame: main tip center, secondary lick left -->
+  <path fill="url(#arcana-outer)" d="M64 10
+    C70 24 82 34 90 48
+    C97 60 102 70 102 82
+    C102 103 85 118 64 118
+    C43 118 26 103 26 82
+    C26 68 33 57 41 47
+    C46 41 51 34 53 26
+    C56 34 61 40 66 44
+    C62 32 61 20 64 10 Z"/>
+  <!-- inner flame core -->
+  <path fill="url(#arcana-inner)" d="M64 60
+    C70 68 79 76 79 88
+    C79 99 72.5 107 64 107
+    C55.5 107 49 99 49 88
+    C49 76 58 68 64 60 Z"/>
+  <!-- arcana spark -->
+  <path fill="#DDD6FE" d="M95 16 L97.6 23.4 L105 26 L97.6 28.6 L95 36 L92.4 28.6 L85 26 L92.4 23.4 Z"/>
+  <!-- hex badge: bottom-right bundle glyph -->
+  <circle cx="99" cy="99" r="25" fill="#2E1065" stroke="#EDE9FE" stroke-width="2.5"/>
+  <path fill="url(#arcana-inner)" d="M99 86 L110.3 92.5 L110.3 105.5 L99 112 L87.7 105.5 L87.7 92.5 Z"/>
+</svg>

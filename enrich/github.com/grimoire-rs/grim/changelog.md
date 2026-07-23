@@ -5,6 +5,67 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.1] - 2026-07-23
+
+### Added
+
+- Add a never|auto|always fork policy to announce *(publish)*
+
+### Documentation
+
+- Freeze the remaining 1.0 contract surfaces *(stability)*
+
+### Fixed
+
+- Always serialize grim_render warnings *(mcp)*
+
+## [0.11.0] - 2026-07-22
+
+### Added
+
+- Add color resolution module *(cli)*
+- Add --color flag and styled clap help *(cli)*
+- Add grim completions command *(cli)*
+- Stub wave-1 vendor surface *(install)*
+- Thread rule scope, shared-skill refcount guard, client matrix docs *(install)*
+- Cursor client renders (rules, agents, mcp) *(install)*
+- Gemini client renders (agents, mcp) *(install)*
+- Kiro client renders (steering rules, mcp) *(install)*
+- Junie client mcp render *(install)*
+- Zed client mcp render *(install)*
+- Amp client mcp render *(install)*
+- Add publishing bootstrapper reference to grim-authoring *(catalog)*
+- Auto-fork index repo on announce without push access *(publish)*
+
+### Changed
+
+- Route print_json through shared write_json_pretty *(cli)*
+- Bundle materialize params *(install)*
+- Universal skill renderer, shared-pool dedup, cursor serializer *(install)*
+
+### Documentation
+
+- Document --color and grim completions
+- Document broken-pipe exit-0 convention
+- Tidy stale stub comment and registry group label
+- Correct 4-vs-10 client drift across docs, catalog, and rules
+- Scope the empty-registry claim and disclose the publish-gate narrowing *(adr)*
+- Align shipped skills with the ten-client release *(catalog)*
+
+### Fixed
+
+- Count vendor MCP config file as client-detection signal *(install)*
+- Gate batch action targets by per-op install state *(tui)*
+- Tag stdout broken-pipe errors with a sentinel *(cli)*
+- Exit 0 silently when stdout pipe closes *(cli)*
+- Pipe-safe schema and completions output *(cli)*
+- Best-effort stderr writes in publish batch and tui guards *(cli)*
+- Harden vendor-wave renders (opencode scope-warn, cursor glob escaping, error-list drift) *(install)*
+- Correct vendor config-path resolution and harden anchor fallbacks *(install)*
+- Compile the Zed Windows root test under forbid(unsafe); harden drift guards *(install)*
+- Recover from an anchor escape instead of wedging *(install)*
+- Carry deprecation through the package index *(catalog)*
+
 ## [0.10.0] - 2026-07-19
 
 ### Added
@@ -509,6 +570,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make release-update.sh executable; add rolling-release regression tests
 - Contact loopback registries over plain HTTP on any port
 
+[0.11.1]: https://github.com/grimoire-rs/grimoire/compare/v0.11.0..v0.11.1
+[0.11.0]: https://github.com/grimoire-rs/grimoire/compare/v0.10.0..v0.11.0
 [0.10.0]: https://github.com/grimoire-rs/grimoire/compare/v0.9.1..v0.10.0
 [0.9.1]: https://github.com/grimoire-rs/grimoire/compare/v0.9.0..v0.9.1
 [0.9.0]: https://github.com/grimoire-rs/grimoire/compare/v0.8.4..v0.9.0

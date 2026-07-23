@@ -1,9 +1,9 @@
 {
  "title": "grim-authoring",
  "summary": "Deep authoring guide for grim skill, rule, agent, mcp, and bundle artifacts",
- "version": "0.10.0",
+ "version": "0.11.1",
  "license": "Apache-2.0",
- "created": "2026-07-19T12:56:55+02:00",
+ "created": "2026-07-23T08:08:35+02:00",
  "keywords": [
   "grim",
   "grimoire",
@@ -22,6 +22,9 @@
   "0",
   "0.10",
   "0.10.0",
+  "0.11",
+  "0.11.0",
+  "0.11.1",
   "0.2",
   "0.2.1",
   "0.3",
@@ -34,7 +37,7 @@
   "latest"
  ],
  "deprecated": null,
- "descDigest": "sha256:371b6ee969a231677f284f78b58b54f7adc0eb1e8d828251f36a83b89f31133b",
+ "descDigest": "sha256:efd4a1f94e23cbe74f6fcfbb795a6b856b475e39506044b366c65bc405ca519d",
  "hasReadme": true,
  "hasChangelog": true,
  "logo": "/logos/github.com/grimoire-rs/grim-authoring.svg"

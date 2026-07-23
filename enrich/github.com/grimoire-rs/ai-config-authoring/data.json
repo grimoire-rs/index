@@ -1,9 +1,9 @@
 {
  "title": "ai-config-authoring",
  "summary": "Vendor-neutral craft guide for authoring AI agent config",
- "version": "0.10.0",
+ "version": "0.11.1",
  "license": "Apache-2.0",
- "created": "2026-07-19T12:56:55+02:00",
+ "created": "2026-07-23T08:08:35+02:00",
  "keywords": [
   "authoring",
   "skills",
@@ -20,6 +20,9 @@
   "0.1.1",
   "0.10",
   "0.10.0",
+  "0.11",
+  "0.11.0",
+  "0.11.1",
   "0.2",
   "0.2.0",
   "0.8",
@@ -30,7 +33,7 @@
   "latest"
  ],
  "deprecated": null,
- "descDigest": "sha256:1b344c94bef42cbdfe00a3ac9ff35e4547621f49d3754e4153a8ae96fabdb82e",
+ "descDigest": "sha256:0554697c3068979cf45934179c3efbf289e5bc7f6667eb4aacfb49449645cf57",
  "hasReadme": true,
  "hasChangelog": true,
  "logo": "/logos/github.com/grimoire-rs/ai-config-authoring.svg"

@@ -1,0 +1,26 @@
+{
+ "title": "hex-architect",
+ "summary": "Swarm-backed architecture design - ADRs, C4, trade-off matrices",
+ "version": "0.1.0",
+ "license": "Apache-2.0",
+ "keywords": [
+  "architecture",
+  "adr",
+  "design",
+  "swarm",
+  "trade-off",
+  "one-way-door",
+  "c4"
+ ],
+ "tags": [
+  "0",
+  "0.1",
+  "0.1.0",
+  "latest"
+ ],
+ "deprecated": null,
+ "descDigest": "sha256:9cb7c3e4574466b14aeed34f4b42fe35f82f60b626e76a29afea8071e561a983",
+ "hasReadme": true,
+ "hasChangelog": true,
+ "logo": "/logos/github.com/michael-herwig/hex-architect.svg"
+}
