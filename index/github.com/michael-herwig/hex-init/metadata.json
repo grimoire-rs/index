@@ -1,0 +1,22 @@
+{
+  "description": "Initialize or reconfigure a project for the hex swarm - audits project context (CLAUDE.md/AGENTS.md) for the knowledge the orchestrators need (how to verify, spec/plan conventions), provisions what is missing into project context, optionally seeds default templates, and bootstraps the AI-maintained swarm memory at .agents/memory/hex.md (cached pointers, orchestration preferences, perspectives of interest). Re-entrant - run again anytime to re-audit pointers or change the setup.",
+  "keywords": [
+    "init",
+    "setup",
+    "configuration",
+    "conventions",
+    "templates",
+    "swarm",
+    "onboarding"
+  ],
+  "kind": "skill",
+  "name": "hex-init",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/hex-init",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Project-context audit and setup for the hex swarm bundle"
+}

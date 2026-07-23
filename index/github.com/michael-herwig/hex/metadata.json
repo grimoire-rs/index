@@ -1,0 +1,22 @@
+{
+  "description": "Swarm orchestration bundle: four tiered orchestrator skills covering the full feature lifecycle - planning, contract-first TDD execution, adversarial review, and architecture design. Each scales worker count, model choice, and review breadth via a low|medium|high tier (auto default) plus single-axis overlays.",
+  "keywords": [
+    "swarm",
+    "orchestration",
+    "multi-agent",
+    "planning",
+    "tdd",
+    "review",
+    "architecture"
+  ],
+  "kind": "bundle",
+  "name": "hex",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/hex",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Tiered multi-agent swarm orchestration: plan, execute, review, architect"
+}
