@@ -1,0 +1,22 @@
+{
+  "description": "Tiered adversarial review orchestrator for a working tree, branch diff, pull request, or plan/markdown artifact before it lands on main — a staged reviewer panel (spec, quality, security, performance, docs), root-cause analysis, and an optional cross-model adversarial gate scale with diff size via tier (low|medium|high, auto by default). Use for pre-merge checks, code review, branch or PR review, diff review, plan or ADR review, adversarial review, root-cause analysis, or any \"review this before I merge\" request. Never edits the code or diff under review, and never commits — its writes are the plan's Status block, an append-only convergence check, and — on an approved, converged fold — the resolved spec file and a fold receipt; the fix loop is /hex-execute's job.",
+  "keywords": [
+    "review",
+    "swarm",
+    "multi-agent",
+    "adversarial",
+    "rca",
+    "pre-merge",
+    "verdict"
+  ],
+  "kind": "skill",
+  "name": "hex-review",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/hex-review",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Tiered swarm review — diff or artifact to verdict via adversarial reviewer panel"
+}

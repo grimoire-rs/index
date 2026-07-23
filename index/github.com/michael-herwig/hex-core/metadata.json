@@ -1,0 +1,22 @@
+{
+  "description": "Shared reference library for the hex swarm-orchestration bundle - worker role registry, model capability matrix, swarm protocol vocabulary, and the .agents/memory/hex.md memory spec. Not invoked directly; the hex-plan, hex-execute, hex-review, hex-architect, and hex-init skills link into it.",
+  "keywords": [
+    "swarm",
+    "orchestration",
+    "workers",
+    "models",
+    "protocol",
+    "memory",
+    "library"
+  ],
+  "kind": "skill",
+  "name": "hex-core",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/hex-core",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Shared reference library for the hex swarm bundle"
+}

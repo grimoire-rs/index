@@ -1,0 +1,22 @@
+{
+  "description": "Tiered multi-agent planning orchestrator — decomposes a feature, issue, or PR into a contract-first TDD plan through discover, research, design, decompose, and adversarial-review phases. Use for multi-step feature planning, task decomposition, swarm planning, multi-perspective research, meta-plan preview, or ADR scaffolding. Tier (low|medium|high, auto by default) scales research depth, whether an architect designs, and review breadth.",
+  "keywords": [
+    "planning",
+    "swarm",
+    "multi-agent",
+    "decomposition",
+    "research",
+    "adr",
+    "tdd"
+  ],
+  "kind": "skill",
+  "name": "hex-plan",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/hex-plan",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Tiered swarm planning — prompt/issue to reviewed contract-first plan"
+}

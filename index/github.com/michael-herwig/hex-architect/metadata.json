@@ -1,0 +1,22 @@
+{
+  "description": "Tiered architecture-decision orchestrator — evaluates trade-offs and produces ADRs or system designs through discover, research, design, and adversarial-review phases. Use for architecture decisions, ADRs, system design, trade-off analysis between approaches, one-way-door decisions, C4-level design, or NFR evaluation (scalability, availability, latency, security, cost, operability). Tier (low|medium|high, auto by default) scales research-axis count and selection, whether the design is delegated to an architect worker, and review breadth.",
+  "keywords": [
+    "architecture",
+    "adr",
+    "design",
+    "swarm",
+    "trade-off",
+    "one-way-door",
+    "c4"
+  ],
+  "kind": "skill",
+  "name": "hex-architect",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/hex-architect",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Swarm-backed architecture design - ADRs, C4, trade-off matrices"
+}
