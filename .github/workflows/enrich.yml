@@ -26,19 +26,17 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: ocx-sh/setup-ocx@de8e3366f812941423985eaccae28663ef192e8b # v1.3.0
 
-      # grim ships as an ocx package (ocx.sh/grim) but wiring it into the
-      # project ocx.toml would dirty the offline lock that test.yml checks, so
-      # install it standalone via the official (cargo-dist) installer instead.
-      - name: Install grim
-        env:
-          GRIMOIRE_INSTALL_DIR: ${{ runner.temp }}/grim-bin
-        run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://setup.grimoire.rs/sh \
-            | sh -s -- --no-modify-path
-          echo "$GRIMOIRE_INSTALL_DIR/bin" >> "$GITHUB_PATH"
-
+      # grim comes from ocx.toml like every other tool. ocx.lock pins it by
+      # digest, which the offline jobs want; this is the one job driving the
+      # live registry, so advance that single binding to today's `latest`
+      # first. `ocx update <name>` resolves live and freezes every other pin,
+      # so the deterministic toolchain test.yml checks is untouched. The lock
+      # rewrite stays runner-local — the commit step only stages enrich/.
       - name: Refresh sidecars
-        run: python3 scripts/enrich.py
+        run: |
+          set -euo pipefail
+          ocx update grim --pull
+          ocx run grim cpython -- python3 scripts/enrich.py
 
       - name: Commit changes
         env:

@@ -1,9 +1,9 @@
 [metadata]
 lock_version = 2
 declaration_hash_version = 1
-declaration_hash = "sha256:5ed8d4cf50239aa707fa28d3ae2c5e3ed4ee1f0d12245173fdb6bbd413012ffe"
-generated_by = "ocx 0.3.11"
-generated_at = "2026-07-03T19:29:52Z"
+declaration_hash = "sha256:9e1214a7358f9ef273f1c58d099df23f62ec79ca07e23e07c5cd1e419ef35fc1"
+generated_by = "ocx 0.4.3"
+generated_at = "2026-07-24T03:52:52Z"
 
 [[tool]]
 name = "cpython"
@@ -29,6 +29,19 @@ repository = "ocx.sh/go-task"
 "linux/arm64" = "sha256:78d6b8687428f5f5e2782c11295db4c813d5aab9f0cae0abc86710a2851e51f5"
 "windows/amd64" = "sha256:b3c73b637e0d1e8aaacbefb7696cd65e36016edb571b4f0e3eb919b783079ae1"
 "windows/arm64" = "sha256:d00de6d5a1ae0c8c2f3e639ef72cc5e7ee78c15dc34ee91cf77d8d84f409a365"
+
+[[tool]]
+name = "grim"
+group = "default"
+repository = "ocx.sh/grim"
+
+[tool.platforms]
+"darwin/amd64" = "sha256:201cf01e26b607c03b3d5eb88a4434ae9d1f20b26caabda740bc76fb8a123948"
+"darwin/arm64" = "sha256:63d2763e3e097e6fd4c09ac537a88006118ea4a9df52add1e68e995d4df85888"
+"linux/amd64" = "sha256:c5dba6a9257e903a708898d54a6058d115ded8a7545db36409b741de87fc0e6c"
+"linux/arm64" = "sha256:2fef79fea2ee7aa6f1dd2f34b576733003f76e7eb411c4b1f2cd1f6ed92722a4"
+"windows/amd64" = "sha256:50d18beed1f6c29d5f53e29a14c1033f82eb3bdd6dc1f9c4182e5e6c168b822c"
+"windows/arm64" = "sha256:0b5cb0f52bfdc3a3a8cb2f168c4448442f1bdb12b52ecc8827019c22293f6d47"
 
 [[tool]]
 name = "nodejs"
