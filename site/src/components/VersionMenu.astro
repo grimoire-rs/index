@@ -1,0 +1,105 @@
+---
+// One version segment. Left-click copies the pinned identifier; right-click
+// opens the grim commands for it, at the pointer. The menu is a native
+// popover for the top layer (nothing can clip it, no z-index fights), but
+// `manual`, not `auto`: an auto popover light-dismisses on the mouseup of
+// the very right-click that opened it, so the menu flashes and vanishes.
+// The page script therefore owns placement AND dismissal.
+interface Props {
+  pkgRef: string;
+  tag: string;
+  current?: boolean;
+}
+const { pkgRef, tag, current = false } = Astro.props;
+const pinned = `${pkgRef}:${tag}`;
+const menuId = `vm-${tag.replace(/[^a-z0-9]+/gi, "-")}`;
+const commands: [string, string][] = [
+  ["copy reference", pinned],
+  ["add to project", `grim add ${pinned}`],
+  ["add globally", `grim add --global ${pinned}`],
+  ["describe", `grim describe ${pinned}`],
+  ["fetch", `grim fetch ${pinned}`],
+];
+---
+
+<button
+  type="button"
+  class:list={["version", { current }]}
+  data-copy={pinned}
+  data-menu={menuId}
+  aria-current={current ? "true" : undefined}
+  title={`Copy ${pinned} — right-click for commands`}>{tag}</button
+>
+
+<div popover="manual" id={menuId} class="version-menu">
+  {
+    commands.map(([label, cmd]) => (
+      <button type="button" class="cmd" data-copy={cmd} title={cmd}>
+        <span>{label}</span>
+      </button>
+    ))
+  }
+</div>
+
+<style>
+  /* No `span` inside: the shared copy script only swaps a label when it
+     finds one, so the tag keeps its text and flashes the class instead. */
+  .version {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    padding: 0.15rem 0.6rem;
+    font-family: ui-monospace, "SFMono-Regular", monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .version:hover,
+  .version:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .version.current {
+    color: var(--fg);
+    font-weight: 600;
+    border-color: var(--accent);
+  }
+  .version.copied {
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .version-menu {
+    /* Overrides the UA's centred `inset: 0; margin: auto` — the page script
+       sets left/top from the pointer. */
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    min-width: 11rem;
+    padding: 0.3rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 0.15);
+  }
+  .cmd {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.82rem;
+    text-align: left;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+  }
+  .cmd:hover,
+  .cmd:focus-visible {
+    background: var(--chip-bg);
+    color: var(--fg);
+  }
+</style>

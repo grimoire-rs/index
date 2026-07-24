@@ -21,7 +21,9 @@ tasks:
 
   test:
     desc: Offline validator self-checks
-    cmd: python3 scripts/test_validate_mr.py
+    cmds:
+      - python3 scripts/test_validate_mr.py
+      - node --test site/src/lib/catalog.test.ts
 
   enrich:
     desc: Refresh enrich/ sidecars from the live registry (online; CI-scheduled)

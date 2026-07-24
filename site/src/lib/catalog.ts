@@ -84,6 +84,22 @@ export function loadPackages(): Package[] {
   return packages.sort((a, b) => a.name.localeCompare(b.name));
 }
 
+// Publishing 0.10.0 also moves the rolling tags 0.10, 0 and latest, so the
+// full tag list is mostly history. Return just the current release's chain
+// (latest | 0 | 0.10 | 0.10.0). `tags` must already be sorted newest-first.
+export function versionCascade(version: string | undefined, tags: string[]): string[] {
+  const pinned = version ?? tags.find((t) => /^v?\d/.test(t));
+  // Split the raw string so a "v" prefix rides along into the rolling tags
+  // it was published under ("v1.2.3" -> "v1", "v1.2"), same as unprefixed.
+  const [major, minor] = (pinned ?? "").split(".");
+  const chain = [...new Set(["latest", major, `${major}.${minor}`, pinned])].filter(
+    (t): t is string => !!t && tags.includes(t),
+  );
+  // Tags nothing recognises as a version (["stable", "beta"]) yield no chain
+  // — front the newest few rather than an empty strip.
+  return chain.length > 0 ? chain : tags.slice(0, 4);
+}
+
 // MDN-standard Intl.RelativeTimeFormat rollup (no date library).
 const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 const TIME_DIVISIONS: [number, Intl.RelativeTimeFormatUnit][] = [

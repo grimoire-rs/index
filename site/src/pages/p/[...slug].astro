@@ -1,6 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { loadPackages, type Package } from "../../lib/catalog";
+import VersionMenu from "../../components/VersionMenu.astro";
+import { loadPackages, versionCascade, type Package } from "../../lib/catalog";
 import { getEntry, render } from "astro:content";
 
 export function getStaticPaths() {
@@ -35,6 +36,9 @@ function compareVersions(a: string, b: string): number {
   return 0;
 }
 const tags = [...(pkg.tags ?? [])].sort(compareVersions);
+
+const cascade = versionCascade(pkg.version, tags);
+const older = tags.filter((t) => !cascade.includes(t));
 
 const title = pkg.title ?? pkg.name;
 const description = pkg.summary ?? pkg.description ?? `${pkg.kind} package: ${pkg.ref}`;
@@ -108,31 +112,21 @@ const vscodeUrl = `vscode://grimoire-rs.grimoire-vscode/open?repo=${encodeURICom
         {tags.length > 0 && (
           <section>
             <h2>Versions</h2>
-            <ul class="tag-list">
-              {tags.map((tag) => (
-                <li>
-                  <code>{tag}</code>
-                  <button
-                    type="button"
-                    class="copy"
-                    data-copy={`grim add ${pkg.ref}:${tag}`}
-                    aria-label={`Copy install command for ${tag}`}
-                  >
-                    <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
-                      <path
-                        fill="currentColor"
-                        d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
-                      />
-                      <path
-                        fill="currentColor"
-                        d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
-                      />
-                    </svg>
-                    <span>copy</span>
-                  </button>
-                </li>
+            <div class="cascade">
+              {cascade.map((tag) => (
+                <VersionMenu pkgRef={pkg.ref} tag={tag} current={tag === pkg.version} />
               ))}
-            </ul>
+            </div>
+            {older.length > 0 && (
+              <details class="older">
+                <summary>{older.length} older</summary>
+                <div class="cascade">
+                  {older.map((tag) => (
+                    <VersionMenu pkgRef={pkg.ref} tag={tag} />
+                  ))}
+                </div>
+              </details>
+            )}
           </section>
         )}
 
@@ -188,16 +182,55 @@ const vscodeUrl = `vscode://grimoire-rs.grimoire-vscode/open?repo=${encodeURICom
 
 <script>
   for (const btn of document.querySelectorAll<HTMLButtonElement>("button[data-copy]")) {
+    // Read the label up front: re-reading it inside the handler snapshots
+    // "copied" when the button is clicked twice inside the 1500ms window.
+    const label = btn.querySelector("span");
+    const original = label?.textContent ?? "copy";
     btn.addEventListener("click", () => {
       navigator.clipboard.writeText(btn.dataset.copy ?? "").then(() => {
-        const label = btn.querySelector("span");
         btn.classList.add("copied");
         if (label) label.textContent = "copied";
         setTimeout(() => {
           btn.classList.remove("copied");
-          if (label) label.textContent = "copy";
+          if (label) label.textContent = original;
         }, 1500);
       });
+    });
+  }
+
+  // Right-click a version: open its command menu at the pointer. The menu is
+  // a `manual` popover (see VersionMenu.astro), so dismissal is ours.
+  let openMenu: HTMLElement | null = null;
+  const closeMenu = () => {
+    openMenu?.hidePopover();
+    openMenu = null;
+  };
+  // A right-click fires no `click`, so this never eats the gesture that just
+  // opened the menu — but it does close on a command item, which is wanted.
+  document.addEventListener("click", closeMenu);
+  document.addEventListener("scroll", closeMenu, true);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenu();
+  });
+
+  for (const seg of document.querySelectorAll<HTMLElement>("[data-menu]")) {
+    const menu = document.getElementById(seg.dataset.menu ?? "");
+    if (!menu) continue;
+    seg.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      closeMenu();
+      // The keyboard Menu key fires contextmenu at 0,0 — fall back to the
+      // segment itself so it doesn't land in the page corner.
+      const seat = seg.getBoundingClientRect();
+      menu.style.left = `${e.clientX || seat.left}px`;
+      menu.style.top = `${e.clientY || seat.bottom}px`;
+      menu.showPopover();
+      openMenu = menu;
+      // Nudge back inside once measured — the pointer can be within a menu's
+      // width of the right or bottom edge.
+      const box = menu.getBoundingClientRect();
+      if (box.right > innerWidth) menu.style.left = `${innerWidth - box.width - 8}px`;
+      if (box.bottom > innerHeight) menu.style.top = `${innerHeight - box.height - 8}px`;
     });
   }
 </script>
@@ -212,6 +245,10 @@ const vscodeUrl = `vscode://grimoire-rs.grimoire-vscode/open?repo=${encodeURICom
     display: flex;
     align-items: center;
     gap: 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
   }
   .tile {
     flex-shrink: 0;
@@ -320,22 +357,26 @@ const vscodeUrl = `vscode://grimoire-rs.grimoire-vscode/open?repo=${encodeURICom
     letter-spacing: 0.04em;
     color: var(--muted);
   }
-  .tag-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  /* Loose badges, both for the cascade and the older tags — VersionMenu owns
+     the pill itself, this only lays them out. */
+  .cascade {
     display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+    flex-wrap: wrap;
+    gap: 0.3rem;
   }
-  .tag-list li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
+  .older {
+    margin-top: 0.5rem;
   }
-  .tag-list code {
-    font-size: 0.85rem;
+  .older[open] > summary {
+    margin-bottom: 0.5rem;
+  }
+  .older > summary {
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .older > summary:hover {
+    color: var(--fg);
   }
   dl {
     margin: 0;
