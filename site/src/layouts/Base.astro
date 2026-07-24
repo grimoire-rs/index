@@ -452,10 +452,19 @@ const { title, description, image = "/favicon.svg" } = Astro.props;
         font-size: 0.82rem;
         color: var(--deprecated);
       }
+      /* Long descriptions would stretch their whole grid row; clamp to 3
+         lines so cards stay uniform. Full text lives on the detail page. */
       .description {
         margin: 0;
         font-size: 0.92rem;
-        flex: 1;
+        /* `auto` basis, not `0`: overflow:hidden drops the min-height:auto
+           floor, so a 0-basis item can collapse in an auto-height column. */
+        flex: 1 1 auto;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        overflow: hidden;
       }
       .keywords {
         display: flex;
