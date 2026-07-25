@@ -20,6 +20,8 @@ concurrency:
 
 jobs:
   enrich:
+    # Announce forks inherit this cron; only the canonical index refreshes.
+    if: github.repository == 'grimoire-rs/index'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
