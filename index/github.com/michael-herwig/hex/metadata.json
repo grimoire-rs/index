@@ -15,7 +15,7 @@
     "github": "michael-herwig",
     "id": 3511590
   },
-  "ref": "ghcr.io/michael-herwig/hex",
+  "ref": "ghcr.io/michael-herwig/arcana/hex",
   "repository": "https://github.com/michael-herwig/arcana",
   "schema": 1,
   "summary": "Tiered multi-agent swarm orchestration: plan, execute, review, architect"

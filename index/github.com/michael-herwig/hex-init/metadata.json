@@ -15,7 +15,7 @@
     "github": "michael-herwig",
     "id": 3511590
   },
-  "ref": "ghcr.io/michael-herwig/hex-init",
+  "ref": "ghcr.io/michael-herwig/arcana/hex-init",
   "repository": "https://github.com/michael-herwig/arcana",
   "schema": 1,
   "summary": "Project-context audit and setup for the hex swarm bundle"
