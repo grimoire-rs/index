@@ -8,7 +8,7 @@ which AI coding client you run it in.
 ## Quickstart
 
 ```sh
-grim add ghcr.io/michael-herwig/hex
+grim add ghcr.io/michael-herwig/arcana/hex
 ```
 
 Then, in a project:

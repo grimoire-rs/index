@@ -1,7 +1,7 @@
 {
  "title": "hex-plan",
  "summary": "Tiered swarm planning \u2014 prompt/issue to reviewed contract-first plan",
- "version": "0.1.0",
+ "version": "0.1.1",
  "license": "Apache-2.0",
  "keywords": [
   "planning",
@@ -15,11 +15,11 @@
  "tags": [
   "0",
   "0.1",
-  "0.1.0",
+  "0.1.1",
   "latest"
  ],
  "deprecated": null,
- "descDigest": "sha256:9cb7c3e4574466b14aeed34f4b42fe35f82f60b626e76a29afea8071e561a983",
+ "descDigest": "sha256:597cdc4bba615f3bf511192c94fc70b2e9744e69cc836275f13b0f4c1861153e",
  "hasReadme": true,
  "hasChangelog": true,
  "logo": "/logos/github.com/michael-herwig/hex-plan.svg"
