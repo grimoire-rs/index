@@ -15,7 +15,7 @@
     "github": "michael-herwig",
     "id": 3511590
   },
-  "ref": "ghcr.io/michael-herwig/hex-execute",
+  "ref": "ghcr.io/michael-herwig/arcana/hex-execute",
   "repository": "https://github.com/michael-herwig/arcana",
   "schema": 1,
   "summary": "Tiered swarm execution — plan artifact to tested, reviewed commit"

@@ -15,7 +15,7 @@
     "github": "michael-herwig",
     "id": 3511590
   },
-  "ref": "ghcr.io/michael-herwig/hex-core",
+  "ref": "ghcr.io/michael-herwig/arcana/hex-core",
   "repository": "https://github.com/michael-herwig/arcana",
   "schema": 1,
   "summary": "Shared reference library for the hex swarm bundle"

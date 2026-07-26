@@ -15,7 +15,7 @@
     "github": "michael-herwig",
     "id": 3511590
   },
-  "ref": "ghcr.io/michael-herwig/hex-review",
+  "ref": "ghcr.io/michael-herwig/arcana/hex-review",
   "repository": "https://github.com/michael-herwig/arcana",
   "schema": 1,
   "summary": "Tiered swarm review — diff or artifact to verdict via adversarial reviewer panel"

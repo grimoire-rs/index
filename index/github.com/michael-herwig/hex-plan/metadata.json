@@ -15,7 +15,7 @@
     "github": "michael-herwig",
     "id": 3511590
   },
-  "ref": "ghcr.io/michael-herwig/hex-plan",
+  "ref": "ghcr.io/michael-herwig/arcana/hex-plan",
   "repository": "https://github.com/michael-herwig/arcana",
   "schema": 1,
   "summary": "Tiered swarm planning — prompt/issue to reviewed contract-first plan"
