@@ -1,0 +1,49 @@
+name: dco
+
+# Enforces the DCO promised in CONTRIBUTING.md: every non-merge, non-bot
+# commit newly introduced by a pull request must carry a Signed-off-by
+# trailer matching its author.
+#
+# Deliberately `pull_request`, not `pull_request_target` — unlike
+# validate-pr.yml (which needs write access to auto-merge index pointers)
+# this check needs no secrets and no elevated permissions, so it runs with
+# the PR's own workflow file and default read-only token. Scoping the range
+# to base..head (not main..HEAD) also keeps unsigned pre-DCO history out of
+# scope automatically.
+#
+# index/** is excluded: those pointer-only PRs are frequently opened by
+# `grim publish --announce` under a fixed local git identity, and the data
+# itself is CC0 (see README's License section) — sign-off is a promise about
+# code contributed under LICENSE, which pointer PRs don't touch.
+
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore: [index/**]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dco-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  dco:
+    name: DCO Sign-off
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Setup ocx
+        uses: ocx-sh/setup-ocx@de8e3366f812941423985eaccae28663ef192e8b # v1.3.0
+      - name: Check sign-off
+        # SHAs via env, not inline interpolation into the run: line.
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: task dco RANGE="$BASE_SHA..$HEAD_SHA"
