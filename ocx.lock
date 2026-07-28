@@ -1,21 +1,9 @@
 [metadata]
 lock_version = 2
 declaration_hash_version = 1
-declaration_hash = "sha256:9e1214a7358f9ef273f1c58d099df23f62ec79ca07e23e07c5cd1e419ef35fc1"
+declaration_hash = "sha256:26bb3d412cb8f805b35ed68918b236ed6bd1a0b0cf18e5067a6e2ef1e644d936"
 generated_by = "ocx 0.4.3"
-generated_at = "2026-07-24T03:52:52Z"
-
-[[tool]]
-name = "cpython"
-group = "default"
-repository = "ocx.sh/cpython"
-
-[tool.platforms]
-"darwin/amd64" = "sha256:c93f1cd08d2eb34f6c0592c9a64bd52babb4f08c686962f202db56eb8872d869"
-"darwin/arm64" = "sha256:1e4f7c0d4161b109ed57c97f7270d3f564ec48d55c66eb393825b34da8ff53e4"
-"linux/amd64" = "sha256:12ca1e633b5ba7fe54994ee88d5e44433bf449c4a6185ceee2c13cbad1c73fd0"
-"linux/arm64" = "sha256:14cfb4b6ce38e96e99734f7e5eb9b5525ec2c8c7a7b19543afb0a1f07cfd4ad2"
-"windows/amd64" = "sha256:8da48ce422629bfcefddd4b49682dc63fac1e46113b47a30cb41ea667988efbb"
+generated_at = "2026-07-28T17:02:42Z"
 
 [[tool]]
 name = "go-task"
@@ -36,12 +24,12 @@ group = "default"
 repository = "ocx.sh/grim"
 
 [tool.platforms]
-"darwin/amd64" = "sha256:201cf01e26b607c03b3d5eb88a4434ae9d1f20b26caabda740bc76fb8a123948"
-"darwin/arm64" = "sha256:63d2763e3e097e6fd4c09ac537a88006118ea4a9df52add1e68e995d4df85888"
-"linux/amd64" = "sha256:c5dba6a9257e903a708898d54a6058d115ded8a7545db36409b741de87fc0e6c"
-"linux/arm64" = "sha256:2fef79fea2ee7aa6f1dd2f34b576733003f76e7eb411c4b1f2cd1f6ed92722a4"
-"windows/amd64" = "sha256:50d18beed1f6c29d5f53e29a14c1033f82eb3bdd6dc1f9c4182e5e6c168b822c"
-"windows/arm64" = "sha256:0b5cb0f52bfdc3a3a8cb2f168c4448442f1bdb12b52ecc8827019c22293f6d47"
+"darwin/amd64" = "sha256:20c506793cb00e263ca47463ce7ddae393b97b5bdf13d610999e2c855cf76031"
+"darwin/arm64" = "sha256:ca7c2fbaed0979ebd1923992232fcd0567095bc7dab59a84c27aeb71281878e7"
+"linux/amd64" = "sha256:0d5442019afc4e2448010c7a5ccede1a2872110db8fc210b723896addabb0c52"
+"linux/arm64" = "sha256:9a9e89f31cfab397fa34be070434ee315bdba8e5ac78e0dfadd4f15a75f29ce7"
+"windows/amd64" = "sha256:f31bf68202591f52bd813c79777b836d2d58ee8682491816414395414eac5038"
+"windows/arm64" = "sha256:be822901f939f8ff2b595e09cda7b65869c7de3906ec4f07bdc6483ac75237fb"
 
 [[tool]]
 name = "nodejs"
