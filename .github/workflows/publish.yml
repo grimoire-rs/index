@@ -28,10 +28,10 @@ jobs:
   publish:
     # Announce forks inherit this cron but have no Pages site — skip there.
     if: github.repository == 'grimoire-rs/index'
-    uses: grimoire-rs/indexer/.github/workflows/index-pages.yml@v0.1.8
+    uses: grimoire-rs/indexer/.github/workflows/index-pages.yml@v0.1.9
     permissions:
       contents: read
       pages: write
       id-token: write
     with:
-      grim-indexer-version: "0.1.8"
+      grim-indexer-version: "0.1.9"

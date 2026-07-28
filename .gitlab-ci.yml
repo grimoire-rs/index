@@ -21,7 +21,7 @@
 # registry anonymously and commits nothing; set `GRIM_INDEXER_ENRICH` to
 # "false" for a pointers-only site.
 include:
-  - remote: "https://raw.githubusercontent.com/grimoire-rs/indexer/v0.1.8/templates/reusable/gitlab-index-ci.yml"
+  - remote: "https://raw.githubusercontent.com/grimoire-rs/indexer/v0.1.9/templates/reusable/gitlab-index-ci.yml"
 
 variables:
-  GRIM_INDEXER_VERSION: "0.1.8"
+  GRIM_INDEXER_VERSION: "0.1.9"
