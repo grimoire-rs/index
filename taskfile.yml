@@ -9,7 +9,7 @@ version: "3"
 # them in step.
 
 vars:
-  INDEXER: "@grimoire-rs/indexer@0.2.0"
+  INDEXER: "@grimoire-rs/indexer@0.2.1"
 
 tasks:
   default:
