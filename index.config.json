@@ -1,0 +1,27 @@
+{
+  "site": "https://index.grimoire.rs",
+  "brand": "grim package index",
+  "brandMark": "grim",
+  "description": "Browse and search AI-config packages — skills, rules, agents, MCP servers, and bundles — installable with the grim package manager.",
+  "tagline": "Skills, rules, agents, MCP servers, and bundles for AI coding agents, hosted on OCI registries.",
+  "docsUrl": "https://grimoire.rs",
+  "installDocsUrl": "https://grimoire.rs/installation.html",
+  "repoUrl": "https://github.com/grimoire-rs/index",
+  "favicon": "/favicon.svg",
+  "install": [
+    {
+      "os": "Linux / macOS",
+      "command": "curl --proto '=https' --tlsv1.2 -LsSf https://setup.grimoire.rs/sh | sh"
+    },
+    {
+      "os": "Windows",
+      "command": "irm https://setup.grimoire.rs/ps1 | iex"
+    }
+  ],
+  "vscodeExtension": "grimoire-rs.grimoire-vscode",
+  "registry": {
+    "alias": "hub",
+    "index": "https://index.grimoire.rs"
+  },
+  "footerNote": "metadata is CC0 · pointers, not payloads — packages live on OCI registries"
+}
