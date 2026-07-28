@@ -90,33 +90,53 @@ repo — to run a private index.
 
 ## Development
 
-Toolchain (task, node, python) is pinned in [`ocx.toml`](./ocx.toml) and
+This repository holds **data and thin CI callers**. The gate, the build,
+the site renderer and the registry enrichment all live in
+[`@grimoire-rs/indexer`](https://github.com/grimoire-rs/indexer) — fix
+tooling there, and bump the pinned version in `taskfile.yml`,
+`.gitlab-ci.yml` and the two workflow callers together.
+
+Toolchain (task, node, grim) is pinned in [`ocx.toml`](./ocx.toml) and
 bootstrapped by [ocx](https://ocx.sh) — locally via direnv
 (`direnv allow`, PATH comes from `.envrc`), in CI via `ocx-sh/setup-ocx`.
 
 ```sh
 task --list   # all tasks
-task verify   # validator self-checks + full artifact build
-task serve    # build and serve the composed dist/ on :8080
-task dev      # Astro dev server with hot reload (site/ only)
+task build    # compile index/ and render the site into dist/
+task enrich   # refresh enrich/ from the live registry (online, needs grim)
+task serve    # build and serve dist/ on :8080
 ```
 
 Without direnv, prefix commands with `ocx run go-task -- task …`.
 
+## Running your own index
+
+You do not need to fork this repository — scaffold a fresh one:
+
+```sh
+npx @grimoire-rs/indexer init
+```
+
+That writes the `index/` tree, the site config, the trust policy, and CI
+for GitHub, GitLab, or both. Contributors announce into it with
+`grim publish --announce`; the gate decides what auto-merges. Nothing in
+the default setup needs a secret.
+
 ## Running on self-hosted GitLab
 
-Fork or import this repository into your GitLab instance — the shipped
-`.gitlab-ci.yml` gives you the same validate/auto-merge/Pages pipeline
-(the `.github/` workflows stay inert there):
+Import this repository (or a scaffolded one) into your GitLab instance —
+the shipped `.gitlab-ci.yml` gives you the gate and a Pages deploy, and
+the `.github/` workflows stay inert there:
 
 1. Import the repo, protect the default branch.
-2. Create a group or project access token (`api` scope, merge rights)
-   and set it as the **masked** CI/CD variable `GRIM_INDEX_BOT_TOKEN`.
-3. Pointers live at `index/<your-gitlab-host>/<group>/<pkg>/metadata.json`
+2. Pointers live at `index/<your-gitlab-host>/<group>/<pkg>/metadata.json`
    (nested groups allowed) with `owner.login` = the group path and
-   `owner.id` = the GitLab namespace id. MRs auto-merge when the author
-   is a member of the namespace group (`GRIM_INDEX_MIN_ACCESS_LEVEL`,
-   default Developer) and all pointer checks pass.
+   `owner.id` = the GitLab namespace id. The gate passes when the author
+   is a member of the namespace group and all pointer checks pass.
+3. **Merging is an instance-side policy.** An MR supplies its own
+   `.gitlab-ci.yml`, so a contributor can delete the gate job outright —
+   enforce it with a required merge check, protected-branch approval
+   rules, or a compliance pipeline, or treat the GitLab gate as advisory.
 4. Consume via `index = "https://<host>/<group>/index.git"` (private
    repos work through ambient git credentials) or GitLab Pages.
 

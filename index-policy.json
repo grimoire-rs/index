@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "registryHosts": ["ghcr.io"],
+  "reservedNamespaces": ["grim", "grimoire", "index"],
+  "trustedBots": [
+    {
+      "login": "grimoire-index-announce[bot]",
+      "id": "298988186",
+      "namespaces": ["grimoire-rs"]
+    }
+  ]
+}

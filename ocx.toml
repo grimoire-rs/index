@@ -1,5 +1,4 @@
 [tools]
-cpython = "ocx.sh/cpython:3"
 go-task = "ocx.sh/go-task:3"
 grim = "ocx.sh/grim:latest"
 nodejs = "ocx.sh/nodejs:24"

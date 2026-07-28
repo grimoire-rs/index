@@ -1,9 +1,15 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
-# Toolchain (task, node/npm, python3) is pinned in ocx.toml. Locally direnv
+# Toolchain (task, node/npm, grim) is pinned in ocx.toml. Locally direnv
 # supplies PATH via .envrc (`direnv allow`); in CI ocx-sh/setup-ocx does.
-# Tasks call binaries directly.
+#
+# The build, the gate and the enrichment all live in @grimoire-rs/indexer,
+# pinned below and in the two workflow callers plus .gitlab-ci.yml. Keep
+# them in step.
+
+vars:
+  INDEXER: "@grimoire-rs/indexer@0.1.8"
 
 tasks:
   default:
@@ -11,55 +17,23 @@ tasks:
     cmds:
       - task: verify
 
-  deps:
-    desc: Install site npm dependencies (npm ci)
-    cmd: npm ci --prefix site
-    sources:
-      - site/package-lock.json
-    generates:
-      - site/node_modules/.package-lock.json
-
-  test:
-    desc: Offline validator self-checks
-    cmds:
-      - python3 scripts/test_validate_mr.py
-      - node --test site/src/lib/catalog.test.ts
-
   enrich:
-    desc: Refresh enrich/ sidecars from the live registry (online; CI-scheduled)
-    cmd: python3 scripts/enrich.py
-
-  build:index:
-    desc: Compile index/**/metadata.json into dist/ (all.json + copies)
-    cmd: python3 scripts/build.py
-
-  build:site:
-    desc: Build the Astro catalog site (site/dist)
-    deps: [deps]
-    cmd: npm run build --prefix site
+    desc: Refresh enrich/ sidecars from the live registry (online; needs grim)
+    cmd: npx --yes {{.INDEXER}} enrich
 
   build:
-    desc: Full Pages artifact — index JSON + site merged into dist/
-    cmds:
-      - task: build:index
-      - task: build:site
-      - cp -a site/dist/. dist/
+    desc: Full Pages artifact — index JSON + site in dist/
+    cmd: npx --yes {{.INDEXER}} build
 
   serve:
     desc: Build everything and serve dist/ locally (PORT=8080)
     cmds:
       - task: build
-      - python3 -m http.server -d dist {{.PORT | default "8080"}}
-
-  dev:
-    desc: Astro dev server with hot reload (reads index/ live)
-    deps: [deps]
-    cmd: npm run dev --prefix site
+      - npx --yes http-server dist -p {{.PORT | default "8080"}}
 
   verify:
-    desc: CI gate — validator self-checks + full artifact build
+    desc: CI gate — build the full artifact from the committed index
     cmds:
-      - task: test
       - task: build
 
   # Enforce the DCO term CONTRIBUTING.md promises: every non-merge commit in

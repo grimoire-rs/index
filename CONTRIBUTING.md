@@ -5,10 +5,14 @@
 | Path | Purpose |
 |------|---------|
 | `index/` | Package pointers (`metadata.json` per package) — see [README](./README.md) |
-| `enrich/` | Bot-refreshed sidecars (stars, changelog, etc.) — not hand-edited |
-| `scripts/` | Validator, build, and enrichment Python |
-| `site/` | Astro catalog site (`index.grimoire.rs`) |
+| `enrich/` | Registry-refreshed sidecars (README, changelog, logo, versions) — not hand-edited |
+| `index.config.json` | Branding and the "add this index" block the site renders |
+| `index-policy.json` | Committed trust policy the gate reads: registry-host allowlist, reserved namespaces, trusted bots |
 | `dist/` | Build output — generated, not committed |
+
+The gate, the build, the site and the enrichment all live in
+[`@grimoire-rs/indexer`](https://github.com/grimoire-rs/indexer); this
+repository holds data and thin CI callers. Fix the tooling there.
 
 ## Adding or correcting an index entry
 
@@ -21,7 +25,7 @@ edit the file, open a PR, the same checks apply.
 
 ## Prerequisites
 
-Toolchain (`task`, Python 3, Node) is pinned in [`ocx.toml`](./ocx.toml) and
+Toolchain (`task`, Node, `grim`) is pinned in [`ocx.toml`](./ocx.toml) and
 bootstrapped by [ocx](https://ocx.sh):
 
 - Locally: install direnv, then `direnv allow` — `.envrc` loads it.
@@ -30,12 +34,16 @@ bootstrapped by [ocx](https://ocx.sh):
 ## Building & Testing
 
 ```sh
-task test      # offline validator self-checks
-task build     # compile index/ + build the site into dist/
-task verify    # CI gate: test + build
+task build     # compile index/ + render the site into dist/
+task enrich    # refresh enrich/ from the live registry (online, needs grim)
+task verify    # CI gate: full artifact build
 task serve     # build and serve dist/ locally (:8080)
-task dev       # Astro dev server, hot reload (reads index/ live)
 ```
+
+There is no test suite here — the code these tasks run lives in
+[`@grimoire-rs/indexer`](https://github.com/grimoire-rs/indexer) and is
+tested there. What this repository can get wrong is data, and `task build`
+fails on a malformed `metadata.json`.
 
 ## Commit Conventions
 

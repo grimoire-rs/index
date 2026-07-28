@@ -1,19 +1,24 @@
 name: publish
 
+# Builds this index and deploys it to GitHub Pages.
+#
+# Deliberately a thin caller: the job logic lives in a reusable workflow
+# `@grimoire-rs/indexer` owns, so a fix there reaches this repo by bumping
+# the pinned ref below rather than by editing steps here.
+
 on:
   push:
     branches: [main]
   # Auto-merges land via GITHUB_TOKEN, whose pushes do not retrigger
   # push workflows — validate-pr dispatches this workflow explicitly.
   workflow_dispatch:
-  # Daily refresh as a safety net (missed dispatches, site dependencies).
+  # Daily refresh. Also what keeps package READMEs, logos and version lists
+  # current: the called workflow enriches from the live registry on every
+  # build, so a release published since the last deploy shows up here.
   schedule:
     - cron: "17 4 * * *"
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+permissions: {}
 
 concurrency:
   group: pages
@@ -23,17 +28,10 @@ jobs:
   publish:
     # Announce forks inherit this cron but have no Pages site — skip there.
     if: github.repository == 'grimoire-rs/index'
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ocx-sh/setup-ocx@de8e3366f812941423985eaccae28663ef192e8b # v1.3.0
-      - name: Build Pages artifact (index JSON + site)
-        run: task build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-      - id: deploy
-        uses: actions/deploy-pages@v4
+    uses: grimoire-rs/indexer/.github/workflows/index-pages.yml@v0.1.8
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    with:
+      grim-indexer-version: "0.1.8"

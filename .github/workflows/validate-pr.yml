@@ -2,19 +2,32 @@ name: validate-pr
 
 # Auto-merge gate for package announcements.
 #
-# Runs on pull_request_target so the merge step has write permissions.
-# SAFETY CONTRACT: only the trusted base ref is executed; the PR head is
-# fetched into ./pr-tree and consumed as DATA ONLY. Never run scripts,
-# actions, or build steps from the PR checkout.
+# The gate itself is a thin caller of a reusable workflow
+# `@grimoire-rs/indexer` owns — it runs `grim-indexer validate` from npm
+# against the TRUSTED base checkout and reads the PR head as DATA ONLY,
+# never executing, importing or installing anything from it. Its exit code
+# is the whole decision: 0 = eligible for auto-merge.
+#
+# The merge is this repository's policy, not the gate's, so it lives here
+# as a separate job. It checks nothing out, so no contributor code ever
+# runs with the write token it holds.
+#
+# NOT covered: an announce this repo's own CI opens. GitHub runs no
+# workflows on a PR created with `secrets.GITHUB_TOKEN`, so such a PR is
+# effectively ungated and never auto-merges — review it by hand.
 
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
+    # A PR that touches neither is a maintainer change and gets reviewed by
+    # hand — running the gate on it would only ever fail. A PR that touches
+    # one of these AND something else still lands here, and still fails:
+    # the gate is handed every changed path, not just the matching ones.
+    paths:
+      - "index/**"
+      - "index-policy.json"
 
-permissions:
-  contents: write
-  pull-requests: write
-  actions: write # dispatch publish.yml after auto-merge
+permissions: {}
 
 concurrency:
   group: validate-${{ github.event.pull_request.number }}
@@ -22,48 +35,31 @@ concurrency:
 
 jobs:
   validate:
+    uses: grimoire-rs/indexer/.github/workflows/index-validate.yml@v0.1.8
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      grim-indexer-version: "0.1.8"
+
+  # `needs:` is the entire safety condition — this runs only when the gate
+  # exited 0, and the gate sees every changed path in the PR, including
+  # deletions and anything outside `index/`.
+  automerge:
+    needs: validate
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write # dispatch publish.yml after the merge
     steps:
-      - name: Checkout trusted base
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-
-      - name: Fetch PR head as data
+      - name: Merge and deploy
         env:
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          set -euo pipefail
-          git fetch --depth=1 origin "$HEAD_SHA"
-          mkdir pr-tree
-          git --work-tree=pr-tree checkout "$HEAD_SHA" -- index/ || true
-
-      - name: List changed files
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR}/files" \
-            --paginate --jq '.[].filename' > changed.txt
-          cat changed.txt
-
-      - name: Validate
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-          PR_AUTHOR_ID: ${{ github.event.pull_request.user.id }}
-          PR_TREE: pr-tree
-        run: |
-          set -euo pipefail
-          CHANGED_FILES="$(cat changed.txt)" python3 scripts/validate_pr.py
-
-      - name: Auto-merge
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR: ${{ github.event.pull_request.number }}
-        run: |
-          set -euo pipefail
-          gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --squash
+          gh pr merge "$PR" --repo "$REPO" --squash
           # GITHUB_TOKEN pushes skip push-triggered workflows; deploy explicitly.
-          gh workflow run publish.yml --repo "$GITHUB_REPOSITORY" --ref main
+          gh workflow run publish.yml --repo "$REPO" --ref main
