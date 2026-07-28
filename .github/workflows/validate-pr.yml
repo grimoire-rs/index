@@ -19,6 +19,13 @@ name: validate-pr
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
+    # A PR that touches neither is a maintainer change and gets reviewed by
+    # hand — running the gate on it would only ever fail. A PR that touches
+    # one of these AND something else still lands here, and still fails:
+    # the gate is handed every changed path, not just the matching ones.
+    paths:
+      - "index/**"
+      - "index-policy.json"
 
 permissions: {}
 
