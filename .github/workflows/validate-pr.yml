@@ -35,12 +35,12 @@ concurrency:
 
 jobs:
   validate:
-    uses: grimoire-rs/indexer/.github/workflows/index-validate.yml@v0.1.8
+    uses: grimoire-rs/indexer/.github/workflows/index-validate.yml@v0.1.9
     permissions:
       contents: read
       pull-requests: read
     with:
-      grim-indexer-version: "0.1.8"
+      grim-indexer-version: "0.1.9"
 
   # `needs:` is the entire safety condition — this runs only when the gate
   # exited 0, and the gate sees every changed path in the PR, including
