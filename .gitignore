@@ -1,7 +1,20 @@
+# Build output of `grim-indexer build`.
 dist/
+
+# NOT ignored: `public/` is this index's own asset layer - the logo and
+# favicon `index.config.json` names live there, and the build copies it into
+# `dist/`. Ignoring it means the site references files the deploy never had.
+
+# Renderer scratch dir - removed on a clean build, left behind by a killed one.
+.index-*/
+
+node_modules/
+.npm/
+
+# NOT ignored: `package-lock.json` is what pins the renderer this index builds
+# and validates with. Committing it is what makes `npm ci` in CI reproducible.
+
 __pycache__/
 .agent/
-node_modules/
-site/.astro/
 .task/
 .claude/state

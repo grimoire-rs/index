@@ -90,24 +90,38 @@ repo — to run a private index.
 
 ## Development
 
-This repository holds **data and thin CI callers**. The gate, the build,
-the site renderer and the registry enrichment all live in
+This repository holds **the data and the CI that acts on it**. The gate,
+the build, the site renderer and the registry enrichment all live in
 [`@grimoire-rs/indexer`](https://github.com/grimoire-rs/indexer) — fix
-tooling there, and bump the pinned version in `taskfile.yml`,
-`.gitlab-ci.yml` and the two workflow callers together.
-
-Toolchain (task, node, grim) is pinned in [`ocx.toml`](./ocx.toml) and
-bootstrapped by [ocx](https://ocx.sh) — locally via direnv
-(`direnv allow`, PATH comes from `.envrc`), in CI via `ocx-sh/setup-ocx`.
+tooling there, then bump the dependency here the ordinary npm way.
+`package-lock.json` is the single pin: CI runs `npm ci`, so which renderer
+judges a contribution is a reviewed fact in this repository rather than a
+resolution that happens on a runner.
 
 ```sh
-task --list   # all tasks
-task build    # compile index/ and render the site into dist/
-task enrich   # refresh enrich/ from the live registry (online, needs grim)
-task serve    # build and serve dist/ on :8080
+npm ci             # install the pinned renderer
+npm run dev        # serve this index locally, with live reload
+npm run build      # compile index/ and render the site into dist/
+npm run enrich     # refresh enrich/ from the live registry (online, needs grim)
+npm run ci         # re-render .github/workflows/ after editing index.config.json
+npm run ci:check   # fail on drift (what the verify-ci job runs)
 ```
 
-Without direnv, prefix commands with `ocx run go-task -- task …`.
+`task --list` wraps the same scripts, and the toolchain (task, node, grim)
+is pinned in [`ocx.toml`](./ocx.toml) and bootstrapped by
+[ocx](https://ocx.sh) — locally via direnv (`direnv allow`, PATH comes from
+`.envrc`), in CI via `ocx-sh/setup-ocx`. Without direnv, prefix commands
+with `ocx run go-task -- task …`.
+
+### The workflows are generated
+
+`.github/workflows/{pages,validate,verify-ci}.yml` are rendered from the
+`ci` block of `index.config.json` and committed here. Edit the config and
+run `npm run ci`; do not hand-edit the files, because the `verify-ci` job
+re-renders and diffs on every push and pull request. Action pins are
+excluded from that diff, so Renovate may bump `uses: owner/action@<ref>`
+freely. `dco.yml` and `refresh.yml` are this repository's own and are not
+generated.
 
 ## Running your own index
 
@@ -117,16 +131,22 @@ You do not need to fork this repository — scaffold a fresh one:
 npx @grimoire-rs/indexer init
 ```
 
-That writes the `index/` tree, the site config, the trust policy, and CI
-for GitHub, GitLab, or both. Contributors announce into it with
-`grim publish --announce`; the gate decides what auto-merges. Nothing in
-the default setup needs a secret.
+That writes the `index/` tree, the site config, the trust policy, a real
+npm project, and the CI for whichever forge your git remote names.
+Contributors announce into it with `grim publish --announce`; the gate
+decides what auto-merges. Nothing in the default setup needs a secret.
+
+Or start from
+[`grimoire-rs/index-template`](https://github.com/grimoire-rs/index-template)
+— "Use this template", clone, then `npm install && npm run setup`.
 
 ## Running on self-hosted GitLab
 
-Import this repository (or a scaffolded one) into your GitLab instance —
-the shipped `.gitlab-ci.yml` gives you the gate and a Pages deploy, and
-the `.github/` workflows stay inert there:
+Scaffold the index with `"forge": "gitlab"` in the `ci` block (or let
+`init` read it off a GitLab remote) and `npm run ci` writes a
+`.gitlab-ci.yml` carrying the same gate and a Pages deploy. This
+repository is GitHub-hosted, so it ships no GitLab pipeline of its own —
+importing it gives you the data, not the CI. Then:
 
 1. Import the repo, protect the default branch.
 2. Pointers live at `index/<your-gitlab-host>/<group>/<pkg>/metadata.json`

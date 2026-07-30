@@ -5,7 +5,7 @@ name: dco
 # trailer matching its author.
 #
 # Deliberately `pull_request`, not `pull_request_target` — unlike
-# validate-pr.yml (which needs write access to auto-merge index pointers)
+# validate.yml (which needs write access to auto-merge index pointers)
 # this check needs no secrets and no elevated permissions, so it runs with
 # the PR's own workflow file and default read-only token. Scoping the range
 # to base..head (not main..HEAD) also keeps unsigned pre-DCO history out of

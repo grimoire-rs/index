@@ -1,0 +1,18 @@
+{
+  "name": "grimoire-index",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Grimoire, a Grimoire package index.",
+  "type": "module",
+  "scripts": {
+    "dev": "grim-indexer dev",
+    "build": "grim-indexer build",
+    "enrich": "grim-indexer enrich",
+    "validate": "grim-indexer validate",
+    "ci": "grim-indexer ci",
+    "ci:check": "grim-indexer ci --check"
+  },
+  "devDependencies": {
+    "@grimoire-rs/indexer": "^0.3.0"
+  }
+}

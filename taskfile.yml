@@ -4,12 +4,10 @@ version: "3"
 # Toolchain (task, node/npm, grim) is pinned in ocx.toml. Locally direnv
 # supplies PATH via .envrc (`direnv allow`); in CI ocx-sh/setup-ocx does.
 #
-# The build, the gate and the enrichment all live in @grimoire-rs/indexer,
-# pinned below and in the two workflow callers plus .gitlab-ci.yml. Keep
-# them in step.
-
-vars:
-  INDEXER: "@grimoire-rs/indexer@0.2.2"
+# The build, the gate and the enrichment all live in @grimoire-rs/indexer.
+# Which version runs is package-lock.json's answer and nothing else's — these
+# tasks are thin wrappers over the npm scripts, so there is no second pin
+# here to drift out of step with it.
 
 tasks:
   default:
@@ -17,23 +15,30 @@ tasks:
     cmds:
       - task: verify
 
+  install:
+    desc: Install the pinned renderer (what CI does with `npm ci`)
+    cmd: npm ci
+
   enrich:
     desc: Refresh enrich/ sidecars from the live registry (online; needs grim)
-    cmd: npx --yes {{.INDEXER}} enrich
+    cmd: npm run enrich
 
   build:
     desc: Full Pages artifact — index JSON + site in dist/
-    cmd: npx --yes {{.INDEXER}} build
+    cmd: npm run build
 
   serve:
-    desc: Build everything and serve dist/ locally (PORT=8080)
-    cmds:
-      - task: build
-      - npx --yes http-server dist -p {{.PORT | default "8080"}}
+    desc: Serve this index locally with live reload
+    cmd: npm run dev
+
+  ci:
+    desc: Re-render the committed CI from index.config.json
+    cmd: npm run ci
 
   verify:
-    desc: CI gate — build the full artifact from the committed index
+    desc: CI gate — the committed CI matches the config, and the index builds
     cmds:
+      - npm run ci:check
       - task: build
 
   # Enforce the DCO term CONTRIBUTING.md promises: every non-merge commit in
