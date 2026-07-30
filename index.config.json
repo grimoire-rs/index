@@ -23,5 +23,9 @@
     "alias": "hub",
     "index": "https://index.grimoire.rs"
   },
-  "footerNote": "index metadata is CC0 · packages live on OCI registries"
+  "footerNote": "index metadata is CC0 · packages live on OCI registries",
+  "ci": {
+    "forge": "github",
+    "autoMerge": true
+  }
 }

@@ -1,1 +1,6 @@
 ocx.lock merge=union
+
+# `npm run ci:check` compares the generated CI byte for byte, and the renderer
+# emits LF. Git for Windows installs with `core.autocrlf=true`, so without this
+# an untouched clone has CRLF on disk and every generated file reads as drift.
+* text=auto eol=lf

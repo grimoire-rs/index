@@ -1,0 +1,34 @@
+name: refresh
+
+# This repository's own refresh policy, not part of the generated CI.
+#
+# The index stores pointers; the READMEs, changelogs, logos and version lists
+# the site shows come from the registry at build time. So a release published
+# since the last deploy is invisible until something rebuilds - and nothing
+# here changes when a package upstream does. Hence a clock.
+#
+# It dispatches the generated `pages.yml` rather than duplicating its steps,
+# so there is exactly one definition of how this index is built.
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  refresh:
+    # A fork inherits this file. GitHub does not run scheduled workflows in
+    # forks by default, but an enabled one would rebuild a site the fork does
+    # not publish - so say it here rather than rely on that default.
+    if: github.repository == 'grimoire-rs/index'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.repository.default_branch }}
+        run: gh workflow run pages.yml --repo "$REPO" --ref "$BRANCH"
