@@ -24,6 +24,7 @@
     "index": "https://index.grimoire.rs"
   },
   "footerNote": "index metadata is CC0 · packages live on OCI registries",
+  "footerLinks": [{ "label": "privacy", "href": "https://grimoire.rs/privacy.html" }],
   "ci": {
     "forge": "github",
     "autoMerge": true
