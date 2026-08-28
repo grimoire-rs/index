@@ -1,5 +1,6 @@
 {
-  "description": "Drive the grim CLI — the OCI package manager for AI skills, rules, agents, and bundles. Use when installing, updating, searching, or publishing AI-config artifacts with grim; when composing grim init, config, add, lock, install, update, status, context, fetch, describe, search, tui, mcp, build, release, publish, login, logout, or completions commands; when configuring settings, multiple registries, or qualified alias/repo references; or when resolving registries, project vs global scope, client targets, or offline mode.",
+  "created": "2026-08-28T11:21:02+02:00",
+  "description": "Drive the grim CLI — the OCI package manager for AI skills, rules, agents, and bundles. Use when installing, updating, searching, rating, or publishing AI-config artifacts with grim; when composing grim init, config, add, lock, install, update, status, context, fetch, describe, search, rate, tui, mcp, build, release, publish, login, logout, or completions commands; when configuring settings, multiple registries, or qualified alias/repo references; or when resolving registries, project vs global scope, client targets, or offline mode.",
   "keywords": [
     "grim",
     "grimoire",
@@ -17,6 +18,7 @@
     "multi-registry"
   ],
   "kind": "skill",
+  "license": "Apache-2.0",
   "name": "grim-usage",
   "owner": {
     "github": "grimoire-rs",
