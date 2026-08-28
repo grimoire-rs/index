@@ -1,4 +1,5 @@
 {
+  "created": "2026-08-28T11:21:02+02:00",
   "description": "Grimoire catalog, install status, artifact content, and artifact metadata over the Model Context Protocol.",
   "keywords": [
     "grimoire",
@@ -11,6 +12,7 @@
     "render"
   ],
   "kind": "mcp",
+  "license": "Apache-2.0",
   "name": "grim",
   "owner": {
     "github": "grimoire-rs",
