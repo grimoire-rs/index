@@ -25,6 +25,10 @@
   },
   "footerNote": "index metadata is CC0 · packages live on OCI registries",
   "footerLinks": [{ "label": "privacy", "href": "https://grimoire.rs/privacy.html" }],
+  "ratings": {
+    "provider": "github",
+    "container": "Ratings"
+  },
   "ci": {
     "forge": "github",
     "autoMerge": true
