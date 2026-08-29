@@ -1,45 +1,45 @@
 [metadata]
-lock_version = 2
+lock_version = 3
 declaration_hash_version = 1
-declaration_hash = "sha256:26bb3d412cb8f805b35ed68918b236ed6bd1a0b0cf18e5067a6e2ef1e644d936"
-generated_by = "ocx 0.4.3"
-generated_at = "2026-07-28T17:02:42Z"
+declaration_hash = "sha256:3c58f07236fdb0b04297aaf707835feb93ed9207037c1466037b5a9f172c89e3"
+generated_by = "ocx 0.5.6"
+generated_at = "2026-08-09T08:31:59Z"
 
 [[tool]]
 name = "go-task"
 group = "default"
-repository = "ocx.sh/go-task"
+repository = "ocx.sh/go-task/task"
 
 [tool.platforms]
-"darwin/amd64" = "sha256:096c9fd1c8856a41515f5dcc3760e0ff680610aae0861b750cf217315fbe02a9"
-"darwin/arm64" = "sha256:0e0ed9cbeef63f7344e933d1e0c09af46c99abd0824bcfed877b5bd2f6091337"
-"linux/amd64" = "sha256:d3df40ad238fd278bb1529a1230ce186aedd3eb8c0e5d1c495aa9587c188adcf"
-"linux/arm64" = "sha256:78d6b8687428f5f5e2782c11295db4c813d5aab9f0cae0abc86710a2851e51f5"
-"windows/amd64" = "sha256:b3c73b637e0d1e8aaacbefb7696cd65e36016edb571b4f0e3eb919b783079ae1"
-"windows/arm64" = "sha256:d00de6d5a1ae0c8c2f3e639ef72cc5e7ee78c15dc34ee91cf77d8d84f409a365"
+"darwin/amd64" = "sha256:ca9eadfd812b047330bb6b0bb5335350c9d247322fbf6585b6e48b21800b8993"
+"darwin/arm64" = "sha256:5ed31fcedb9c419f547ff16c14dddd594778e57ee9deaba3445ccdb37d79b906"
+"linux/amd64" = "sha256:e47cb22869b6af06ec405a553c4258c2f3d122b1b15c510ea78c9a7edee758aa"
+"linux/arm64" = "sha256:0a2165fdaae5f0a9ecb7513115db95d8982a19a945345d1bec59192884d38a02"
+"windows/amd64" = "sha256:0e8ec12f2485964e32265998cca011a9815be1418e411e68b46fe605fc988e59"
+"windows/arm64" = "sha256:685070855f52a4cc145f9e89ac43204bf830f7f1ec2a0f72f0229d40c5cd2dcf"
 
 [[tool]]
 name = "grim"
 group = "default"
-repository = "ocx.sh/grim"
+repository = "ocx.sh/grimoire/cli"
 
 [tool.platforms]
-"darwin/amd64" = "sha256:20c506793cb00e263ca47463ce7ddae393b97b5bdf13d610999e2c855cf76031"
-"darwin/arm64" = "sha256:ca7c2fbaed0979ebd1923992232fcd0567095bc7dab59a84c27aeb71281878e7"
-"linux/amd64" = "sha256:0d5442019afc4e2448010c7a5ccede1a2872110db8fc210b723896addabb0c52"
-"linux/arm64" = "sha256:9a9e89f31cfab397fa34be070434ee315bdba8e5ac78e0dfadd4f15a75f29ce7"
-"windows/amd64" = "sha256:f31bf68202591f52bd813c79777b836d2d58ee8682491816414395414eac5038"
-"windows/arm64" = "sha256:be822901f939f8ff2b595e09cda7b65869c7de3906ec4f07bdc6483ac75237fb"
+"darwin/amd64" = "sha256:a20e21daab4ef508c2db41a83edd62d6ed98f787f0fff78265e2916cced0e38e"
+"darwin/arm64" = "sha256:a9185b2bdba72bda5327730cb035347f34cbf7e6bc4d4431fd1dd6bae578a966"
+"linux/amd64" = "sha256:390e88c84e00e61212eb4896145c59fd3c68e2d248dc295c65c403165882ccb0"
+"linux/arm64" = "sha256:c68829b7f00f97b87328aab299bdb4791999f8cf5008d44035c73ed01ae8bd50"
+"windows/amd64" = "sha256:1b5c2e205e14115487fc502ac44cda76672038c8b936339328a6841b4203043d"
+"windows/arm64" = "sha256:8bee4a8b31015c592c2fada971768a5d6088897f725edbd87b768e316728fc66"
 
 [[tool]]
 name = "nodejs"
 group = "default"
-repository = "ocx.sh/nodejs"
+repository = "ocx.sh/nodejs/node"
 
 [tool.platforms]
-"darwin/amd64" = "sha256:85088057e700ae0cc381032527978fc274c74f3dcd8d47b8c76a03eb01020961"
-"darwin/arm64" = "sha256:cbbba349ae3fddf029a27552c4590286e38c880ba7974f144e9df2ec4a45a26b"
-"linux/amd64" = "sha256:41bfbf6ebd8a26856a2e6bb1cd4c37671270233fc6c93614e5cec305327266b6"
-"linux/arm64" = "sha256:370d4b75abb94c0d87154f1069c2ffeb5953cd326c9ae1188a883efa0727e0db"
-"windows/amd64" = "sha256:554213ed94635a7a39310165551e0e0f5643fd9d02c6ab3b2e19765a9d5a4da3"
-"windows/arm64" = "sha256:e3a6f77f9ecca89a633c9bbdc25c0cad799a3684c483bbd5922fd0361e84021f"
+"darwin/amd64" = "sha256:c6f2c5709fba82adcaa248d8a4801800acd7aa847017813af282d2c1b4a95380"
+"darwin/arm64" = "sha256:61e81247d80b9a53ce327bf4738aa3f7875ef0d20ef5b25b8166c066383decc0"
+"linux/amd64+libc.glibc" = "sha256:b698e2e621ef7fa85341118c1f6a967dbd9e3715a43bab8e484fe0c5aa546762"
+"linux/arm64+libc.glibc" = "sha256:eefe4a88f27aa433019a4251eab0b354f9e05bcd8382cd3e8a03d7ab0853b689"
+"windows/amd64" = "sha256:f14791518b3eda7d84e18a03bf31b4a1b023c3b0877d1ce6e583adc071660f02"
+"windows/arm64" = "sha256:4941b4b3b8159feb1b2891007cc35c5957e24098beecd54bb9aec907c20065e0"

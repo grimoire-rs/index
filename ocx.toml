@@ -1,4 +1,4 @@
 [tools]
-go-task = "ocx.sh/go-task:3"
-grim = "ocx.sh/grim:latest"
-nodejs = "ocx.sh/nodejs:24"
+go-task = "ocx.sh/go-task/task:3"
+grim = "ocx.sh/grimoire/cli:latest"
+nodejs = "ocx.sh/nodejs/node:24"
