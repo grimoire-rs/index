@@ -261,4 +261,9 @@ jobs:
         with:
           name: grim-stats
           path: .stats.json
+          # `.stats.json` is a dotfile, and upload-artifact skips hidden files
+          # unless told otherwise. Without this the tally succeeds, uploads
+          # nothing, and `build` carries the seed forward - a wipe that reads
+          # as a healthy deploy, which is exactly what R-2 exists to prevent.
+          include-hidden-files: true
           if-no-files-found: error
