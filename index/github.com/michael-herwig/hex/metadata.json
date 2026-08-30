@@ -1,5 +1,5 @@
 {
-  "description": "Swarm orchestration bundle: four tiered orchestrator skills covering the full feature lifecycle - planning, contract-first TDD execution, adversarial review, and architecture design. Each scales worker count, model choice, and review breadth via a low|medium|high tier (auto default) plus single-axis overlays.",
+  "description": "Swarm orchestration bundle: four tiered orchestrator skills covering the full feature lifecycle - planning, contract-first TDD execution, adversarial review, and architecture design. Each scales worker count, model choice, and review breadth via a low|medium|high tier (auto default) plus single-axis overlays. Fronted by a pre-plan discussion mode that talks a problem through before any plan exists, closed by a branch-finalization command that verifies, recomposes and, after one approval gate, force-pushes a review-approved feature branch - degrading to a local-only run where no forge CLI is present, and backed by an always-on rule that re-anchors hex state from files after context loss.",
   "keywords": [
     "swarm",
     "orchestration",
@@ -7,7 +7,11 @@
     "planning",
     "tdd",
     "review",
-    "architecture"
+    "architecture",
+    "discussion",
+    "context-recovery",
+    "finalize",
+    "force-push"
   ],
   "kind": "bundle",
   "name": "hex",
