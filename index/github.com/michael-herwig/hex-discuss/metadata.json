@@ -1,0 +1,23 @@
+{
+  "description": "Use when the user says \"let's just discuss this, don't edit anything yet\", wants to think a fuzzy problem out loud, or asks to talk something through before a plan or ADR starts. Pre-plan discussion mode — answers first, then fires an automatic entry recon wave, elaborates the ask in dependency-batched questions, pushes back with a structured grill, and captures what was settled in a discussion artifact.",
+  "keywords": [
+    "discuss",
+    "discussion",
+    "clarify",
+    "elicit",
+    "interview",
+    "pre-plan",
+    "grill",
+    "research"
+  ],
+  "kind": "skill",
+  "name": "hex-discuss",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/arcana/hex-discuss",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Pre-plan discussion mode — talk a problem through before deciding"
+}

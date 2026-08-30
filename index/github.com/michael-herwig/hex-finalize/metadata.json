@@ -1,0 +1,23 @@
+{
+  "description": "Use when a review-approved feature branch is ready to land and the user asks to finalize it, tidy the commit series, or get the pull request ready to merge. Explicit invocation only — the merge itself stays the human's.",
+  "keywords": [
+    "finalize",
+    "commit series",
+    "recompose",
+    "rebase",
+    "force-push",
+    "pull request",
+    "sign-off",
+    "land"
+  ],
+  "kind": "skill",
+  "name": "hex-finalize",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/arcana/hex-finalize",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Finalize a review-approved branch — recompose, verify, gate, publish"
+}

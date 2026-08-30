@@ -1,0 +1,24 @@
+{
+  "description": "Hex state lives in files, not in conversation memory",
+  "keywords": [
+    "hex",
+    "state",
+    "rule",
+    "compaction",
+    "memory",
+    "re-anchor",
+    "discuss",
+    "finalize",
+    "backup-ref"
+  ],
+  "kind": "rule",
+  "name": "hex-state",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/arcana/hex-state",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Bundle-generic rule — re-anchor hex state from files, never conversation memory"
+}
