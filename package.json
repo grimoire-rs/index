@@ -13,6 +13,6 @@
     "ci:check": "grim-indexer ci --check"
   },
   "devDependencies": {
-    "@grimoire-rs/indexer": "^0.5.1"
+    "@grimoire-rs/indexer": "^0.5.2"
   }
 }
