@@ -89,6 +89,11 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           path: pr-tree
           persist-credentials: false
+          # checkout v7 refuses a fork head under `pull_request_target` without
+          # this opt-in. The tree is data only (see the note above) and carries
+          # no token, which is exactly the case the opt-in exists for; without
+          # it every fork announce has failed this gate since the v7 pin.
+          allow-unsafe-pr-checkout: true
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
