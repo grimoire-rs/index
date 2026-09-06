@@ -1,5 +1,5 @@
 {
-  "description": "Tiered multi-agent execution orchestrator — implements an approved hex-plan artifact (or a free-text task) through contract-first TDD (stub, specify, implement, bounded review-fix loop), then commits. Runs file-disjoint work packages in parallel git worktrees and merges onto a feature branch in serialized topological order. Use to execute, implement, build, or run an approved plan, resume an interrupted execution, or turn a design into tested, reviewed, committed code. Tier (low|medium|high, auto by default) scales review breadth, review-fix loop rounds, and the cross-model code-diff gate.",
+  "description": "Tiered multi-agent execution orchestrator — implements an approved hex-plan artifact (or a free-text task) through contract-first TDD (stub, specify, implement, bounded review-fix loop), then commits. Runs file-disjoint work packages in parallel git worktrees and merges onto a feature branch in serialized topological order. Use to execute, implement, build, or run an approved plan, resume an interrupted execution, or turn a design into tested, reviewed, committed code. Tier (low|medium|high|xhigh|max, auto by default) scales review breadth, review-fix loop rounds, and the cross-model code-diff gate.",
   "keywords": [
     "execution",
     "swarm",
