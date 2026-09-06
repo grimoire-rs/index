@@ -1,0 +1,24 @@
+{
+  "description": "Run an adversarial review of a code diff or a plan artifact under a second AI harness, headlessly, from an ephemeral git worktree with the repository's own instruction, hook and credential files removed. Use when a change needs a reviewer that did not write it, when a cross-model second opinion is wanted before something lands, or when a plan or an ADR should be argued against by a different model.",
+  "keywords": [
+    "review",
+    "adversarial",
+    "cross-model",
+    "second-opinion",
+    "diff",
+    "plan",
+    "worktree",
+    "isolation"
+  ],
+  "kind": "skill",
+  "license": "Apache-2.0",
+  "name": "nox-review",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/arcana/nox-review",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Adversarial review of a diff or a plan artifact under a second AI harness"
+}

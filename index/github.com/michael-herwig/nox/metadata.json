@@ -1,0 +1,24 @@
+{
+  "description": "nox reviews a code diff — or a plan artifact — under a different AI harness than the one that wrote it, headlessly. The review never runs in your checkout. nox builds a pair of synthetic commits with every instruction file, hook, credential and agent-config file neutralized in the tree, checks the target out into an ephemeral git worktree it owns, and spawns the reviewing harness there under a minimal environment — so the reviewer sees the change and not the repository's own instructions. Ships the skill plus a zero-dependency Python zipapp it shells to; findings come back as prose, stamped untrusted.",
+  "keywords": [
+    "review",
+    "adversarial",
+    "cross-model",
+    "second-opinion",
+    "diff",
+    "plan",
+    "worktree",
+    "isolation"
+  ],
+  "kind": "bundle",
+  "license": "Apache-2.0",
+  "name": "nox",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/arcana/nox",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Adversarial review of a diff or a plan artifact under a second AI harness"
+}
