@@ -1,0 +1,21 @@
+{
+  "description": "Use when the user asks to run a retrospective over recorded agent friction, consolidate the retro inbox into ledger findings and proposed skill or project-config edits, or import a handwritten friction log; also run at a goal loop's retro checkpoints.",
+  "keywords": [
+    "retro",
+    "retrospective",
+    "friction",
+    "ledger",
+    "findings",
+    "self-improvement"
+  ],
+  "kind": "skill",
+  "name": "hex-retro",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/arcana/hex-retro",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Consolidate recorded agent friction into ledger findings and proposals"
+}
