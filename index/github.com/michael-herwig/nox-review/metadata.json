@@ -11,7 +11,6 @@
     "isolation"
   ],
   "kind": "skill",
-  "license": "Apache-2.0",
   "name": "nox-review",
   "owner": {
     "github": "michael-herwig",
