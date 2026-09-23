@@ -1,0 +1,23 @@
+{
+  "description": "Use when a settled goal — a discussion, ADR, plan, spec, PR, issue, or existing goal file — should run to completion unattended, and the user wants its goal file plus one paste-ready autonomous-loop prompt for a coding-agent client.",
+  "keywords": [
+    "goal",
+    "loop",
+    "autonomous",
+    "unattended",
+    "paste-ready",
+    "meta-orchestrator",
+    "goal file",
+    "done criteria"
+  ],
+  "kind": "skill",
+  "name": "hex-loop",
+  "owner": {
+    "github": "michael-herwig",
+    "id": 3511590
+  },
+  "ref": "ghcr.io/michael-herwig/arcana/hex-loop",
+  "repository": "https://github.com/michael-herwig/arcana",
+  "schema": 1,
+  "summary": "Goal file plus paste-ready autonomous-loop prompt for a settled goal"
+}

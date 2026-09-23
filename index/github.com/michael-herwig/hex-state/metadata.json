@@ -9,7 +9,9 @@
     "re-anchor",
     "discuss",
     "finalize",
-    "backup-ref"
+    "backup-ref",
+    "retro",
+    "friction"
   ],
   "kind": "rule",
   "name": "hex-state",
