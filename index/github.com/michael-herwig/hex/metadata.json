@@ -1,5 +1,5 @@
 {
-  "description": "Swarm orchestration bundle: four tiered orchestrator skills covering the full feature lifecycle - planning, contract-first TDD execution, adversarial review, and architecture design. Each scales worker count, model choice, and review breadth via a low|medium|high|xhigh|max tier (auto default, max explicit only) plus single-axis overlays. Fronted by a pre-plan discussion mode that talks a problem through before any plan exists, joined by a goal-loop command that turns a settled goal into a goal file and a paste-ready autonomous-run prompt, closed by a branch-finalization command that verifies, recomposes and, after one approval gate, force-pushes a review-approved feature branch - degrading to a local-only run where no forge CLI is present, joined by a retro skill that consolidates recorded friction into a committed ledger and proposals, and backed by an always-on rule that re-anchors hex state from files after context loss.",
+  "description": "Swarm orchestration bundle: four orchestrator skills covering the full feature lifecycle - planning, contract-first TDD execution, adversarial review, and architecture design. Execution runs parallel pipelines of fresh steps with two counted full gates per run; planning, review and architecture scale worker count and review breadth via a low|medium|high|xhigh|max tier (auto default, max explicit only) plus single-axis overlays. Fronted by a pre-plan discussion mode that talks a problem through before any plan exists, joined by a goal-loop command that turns a settled goal into a goal file and a paste-ready autonomous-run prompt, closed by a branch-finalization command that verifies, recomposes and, after one approval gate, force-pushes a review-approved feature branch - degrading to a local-only run where no forge CLI is present, joined by a retro skill that consolidates recorded friction into a committed ledger and proposals, and backed by an always-on rule that re-anchors hex state from files after context loss.",
   "keywords": [
     "swarm",
     "orchestration",
@@ -26,5 +26,5 @@
   "ref": "ghcr.io/michael-herwig/arcana/hex",
   "repository": "https://github.com/michael-herwig/arcana",
   "schema": 1,
-  "summary": "Tiered multi-agent swarm orchestration: plan, execute, review, architect"
+  "summary": "Multi-agent swarm orchestration: plan, execute, review, architect"
 }
