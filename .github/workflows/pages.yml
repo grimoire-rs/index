@@ -41,7 +41,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    needs: ratings
+    needs: stats
     if: always()
     permissions:
       contents: read
@@ -66,7 +66,7 @@ jobs:
 
       # Ahead of the build, not after it: it only resolves this repository's
       # Pages URL and sets outputs, and a step that runs before the build - the
-      # ratings seed - cross-checks `site` against that URL before it reads the
+      # stats seed - cross-checks `site` against that URL before it reads the
       # published sidecar.
       - id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
@@ -107,21 +107,21 @@ jobs:
             echo "::warning::enrich failed - building without READMEs, logos and version lists"
       # Invariant R-2 lives in these two steps and in their order.
       #
-      # A completed tally has already merged itself over this same published
-      # copy, per stat key, so it wins outright. Only when there is no fresh
-      # tally does the published copy get carried forward untouched - which is
-      # exactly what must happen when the `ratings` job failed, was skipped, or
-      # was never enabled on this run.
+      # A completed `stats` job has already merged itself over this same
+      # published copy, per stat key, so it wins outright. Only when there is no
+      # fresh document does the published copy get carried forward untouched -
+      # which is exactly what must happen when the `stats` job failed, was
+      # skipped, or was never enabled on this run.
       - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
-        # A failed or skipped tally produced no artifact. That must not fail
-        # the deploy: carrying the published sidecar forward is the whole point.
+        # A failed or skipped `stats` job produced no artifact. That must not
+        # fail the deploy: carrying the published sidecar forward is the point.
         continue-on-error: true
         with:
           name: grim-stats
 
       # `|| true` is forbidden here. It cannot tell a genuine 404 from a DNS
-      # failure, a TLS error, a 5xx or a truncated body - and if the tally also
-      # failed, the deploy would then publish a site with no sidecar at all,
+      # failure, a TLS error, a 5xx or a truncated body - and if the `stats` job
+      # also failed, the deploy would then publish a site with no sidecar at all,
       # the exact wipe R-2 exists to prevent. So the status code is captured
       # and branched on: 404 is an empty seed, a 2xx that parses is the merge
       # base, anything else fails the job.
@@ -133,10 +133,10 @@ jobs:
 
           # One source. The seed URL is `site` from index.config.json, read
           # out of the checkout here - the same key, the same file and the
-          # same run as the tally that produced the artifact above. Not baked
+          # same run as the job that produced the artifact above. Not baked
           # in at render time on purpose: a workflow rendered before `site`
-          # was last edited would seed from one URL while the tally read the
-          # other, which is the divergence this step exists to close.
+          # was last edited would seed from one URL while the collectors read
+          # the other, which is the divergence this step exists to close.
           SITE_URL=$(node -p 'JSON.parse(require("fs").readFileSync("index.config.json","utf8")).site ?? ""')
           rstrip() { u=$1; while [ "${u%/}" != "$u" ]; do u=${u%/}; done; printf '%s' "$u"; }
           SITE_URL=$(rstrip "$SITE_URL")
@@ -144,14 +144,14 @@ jobs:
             https://*) ;;
             # Not defaulted: the built-in default names the first-party index,
             # and seeding from someone else's published stats would merge
-            # their ratings into this one's sidecar. TLS because the fetched
-            # document decides every published rating - `--proto '=https'`
+            # their stats into this one's sidecar. TLS because the fetched
+            # document decides every published stat - `--proto '=https'`
             # below would refuse it anyway, in curl's words instead of these.
             *) echo "::error::index.config.json needs an explicit https \`site\` - the seed is read from <site>/stats.json (got '$SITE_URL')"; exit 1 ;;
           esac
 
           # The Pages URL is a cross-check, never a second source: while it was
-          # the source, this step fetched one URL and the tally fetched the
+          # the source, this step fetched one URL and the collectors fetched the
           # other, and a 404 there is a legal empty seed - so a disagreement
           # published a sidecar built from nothing, at exit 0.
           #
@@ -159,8 +159,8 @@ jobs:
           # Pages, has no such URL, and `site` stands alone. Neither is a
           # trailing slash, the scheme, or host case - hostnames are
           # case-insensitive where the path is not. A real disagreement fails
-          # ahead of the freshness check below: the tally read `site` too, so
-          # a fresh artifact is no evidence that this URL is the right one.
+          # ahead of the freshness check below: the collectors read `site` too,
+          # so a fresh artifact is no evidence that this URL is the right one.
           lower() { u=${1#*://}; h=${u%%/*}; printf '%s%s' "${h,,}" "${u#"$h"}"; }
           if [ -n "${PAGES_URL:-}" ] && [ "$(lower "$(rstrip "$PAGES_URL")")" != "$(lower "$SITE_URL")" ]; then
             echo "::error::index.config.json publishes to $SITE_URL but this pipeline deploys $PAGES_URL - the seed would be read from one and the sidecar published to the other"
@@ -168,12 +168,12 @@ jobs:
           fi
 
           if [ -f .stats.json ]; then
-            echo "using the tally this run produced"
+            echo "using the stats document this run produced"
             exit 0
           fi
           code=$(curl -sS --proto '=https' --tlsv1.2 --max-time 30 \
             -o .stats.json.seed -w '%{http_code}' "$SITE_URL/stats.json") || {
-            echo "::error::could not read the published stats.json - refusing to deploy a site that would empty every published rating"
+            echo "::error::could not read the published stats.json - refusing to deploy a site that would empty every published stat"
             exit 1
           }
           case "$code" in
@@ -211,24 +211,28 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
-
-  # Tallies the forge's own upvote counters into `.stats.json` - the sidecar
+  # Collects every signal `stats.json` carries into `.stats.json` - the sidecar
   # `build` joins onto the catalog and the deploy publishes beside all.json.
   #
   # Its own job, ahead of `build`, because `build` has to run even when this
-  # one fails. A tally that cannot reach the forge must never empty a published
-  # rating set (R-2), and the only way to keep the previous one is to deploy
-  # without a fresh tally - see the seed step in `build`.
+  # one fails. A collector that cannot reach its backend must never empty a
+  # published stat (R-2), and the only way to keep the previous one is to
+  # deploy without a fresh one - see the seed step in `build`.
   #
-  # Turn ratings off by deleting the `ratings` block from index.config.json and
-  # re-rendering. That stops the tally, but the last one stays published:
+  # ONE job for every collector, not one job each, and that is correctness
+  # rather than thrift: each collector writes a WHOLE fresh document seeded
+  # from the published one, so two jobs both seeding from the published copy
+  # would each drop the other's key, and `build` downloads exactly one
+  # artifact anyway. Here they run in series in one shell and each seeds from
+  # the file the one before it left.
+  #
+  # Turn a collector off by deleting its block from index.config.json and
+  # re-rendering. That stops the collection, but the last one stays published:
   # deleting `stats.json` from the deploy is the other half of the rollback.
-  ratings:
+  stats:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      # The only write anything in this pipeline is granted, and it is what a
-      # vote is: threads live on the forge, nothing is committed here.
       discussions: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -262,7 +266,7 @@ jobs:
           name: grim-stats
           path: .stats.json
           # `.stats.json` is a dotfile, and upload-artifact skips hidden files
-          # unless told otherwise. Without this the tally succeeds, uploads
+          # unless told otherwise. Without this the job succeeds, uploads
           # nothing, and `build` carries the seed forward - a wipe that reads
           # as a healthy deploy, which is exactly what R-2 exists to prevent.
           include-hidden-files: true
