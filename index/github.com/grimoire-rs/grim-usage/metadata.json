@@ -1,6 +1,6 @@
 {
-  "created": "2026-09-28T11:28:23+02:00",
-  "description": "Drive the grim CLI — the OCI package manager for AI skills, rules, agents, and bundles. Use when installing, updating, searching, rating, or publishing AI-config artifacts with grim; when composing grim init, config, add, lock, install, update, status, context, fetch, describe, export, search, rate, tui, mcp, build, release, publish, login, logout, or completions commands; when configuring settings, multiple registries, or qualified alias/repo references; or when resolving registries, project vs global scope, client targets, or offline mode.",
+  "created": "2026-10-23T12:18:52+02:00",
+  "description": "Drive the grim CLI — the OCI package manager for AI skills, rules, agents, MCP servers, hooks, and bundles. Use when installing, updating, searching, rating, or publishing AI-config artifacts with grim; when composing grim init, config, add, lock, install, update, status, context, fetch, describe, export, search, rate, tui, mcp, hook, build, release, publish, login, logout, or completions commands; when adding, pinning, or exporting a plugin marketplace (marketplace.toml); when enabling opt-in telemetry; when configuring settings, multiple registries, or qualified alias/repo references; or when resolving registries, project vs global scope, client targets, or offline mode.",
   "keywords": [
     "grim",
     "grimoire",
@@ -15,6 +15,7 @@
     "agents",
     "bundles",
     "mcp",
+    "hooks",
     "multi-registry"
   ],
   "kind": "skill",

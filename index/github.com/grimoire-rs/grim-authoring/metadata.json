@@ -1,6 +1,6 @@
 {
-  "created": "2026-09-28T11:28:23+02:00",
-  "description": "Author, validate, and package grim-publishable artifacts — skill directories, rule files, agent definitions, MCP server descriptors, and bundle TOMLs. Use when creating or editing an artifact for grim build or grim release; when choosing frontmatter or catalog metadata fields; when adding a vendor-namespaced metadata key for any client grim supports (claude, opencode, copilot, codex, cursor, kiro, junie, gemini, zed, amp, antigravity, cline, droid, goose, warp, openclaw, kilo, qoder — one namespace per client name); or when grim build fails validation with exit code 65.",
+  "created": "2026-10-23T12:18:52+02:00",
+  "description": "Author, validate, and package grim-publishable artifacts — skill directories, rule files, agent definitions, MCP server descriptors, hook manifests, and bundle TOMLs. Use when creating or editing an artifact for grim build or grim release; when choosing frontmatter or catalog metadata fields; when writing a hook.toml with its events, tiers, matchers, and handlers; when creating or maintaining a plugin marketplace git repository (marketplace.toml, grim export marketplace, regenerate CI) or hosting a package index; when adding a vendor-namespaced metadata key for any client grim supports (claude, opencode, copilot, codex, cursor, kiro, junie, gemini, zed, amp, antigravity, cline, droid, goose, warp, openclaw, kilo, qoder — one namespace per client name); or when grim build fails validation with exit code 65.",
   "keywords": [
     "grim",
     "grimoire",
@@ -12,6 +12,7 @@
     "rule",
     "agent",
     "mcp",
+    "hook",
     "bundle",
     "packaging"
   ],
@@ -25,5 +26,5 @@
   "ref": "ghcr.io/grimoire-rs/skills/grim-authoring",
   "repository": "https://github.com/grimoire-rs/grimoire",
   "schema": 1,
-  "summary": "Deep authoring guide for grim skill, rule, agent, mcp, and bundle artifacts"
+  "summary": "Deep authoring guide for grim skill, rule, agent, mcp, hook, and bundle artifacts"
 }

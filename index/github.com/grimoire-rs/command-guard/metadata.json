@@ -1,0 +1,13 @@
+{
+  "created": "2026-10-23T12:18:52+02:00",
+  "description": "Gatekeeper example: refuses a Bash tool call whose text contains the literal `rm -rf /`, and returns the refusal as a JSON verdict rather than an exit code. NOT a security control — the gatekeeper tier is not a security boundary and this check is a substring match that trivial rewording evades. Reads its input, writes a verdict, changes nothing on disk.",
+  "kind": "hook",
+  "name": "command-guard",
+  "owner": {
+    "github": "grimoire-rs",
+    "id": 298895348
+  },
+  "ref": "ghcr.io/grimoire-rs/hooks/command-guard",
+  "repository": "https://github.com/grimoire-rs/grimoire",
+  "schema": 1
+}
