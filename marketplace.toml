@@ -1,0 +1,25 @@
+# The curated plugin marketplace this index publishes to
+# https://github.com/grimoire-rs/marketplace (marketplace-deploy.yml).
+# Every registry member must be a package of this index; the contribution
+# gate refuses anything else. Changes here are reviewed and merged by hand.
+
+[marketplace]
+name = "grimoire"
+description = "Curated grim packages as plugins for Claude Code, Copilot, Codex and Qoder"
+repository = "https://github.com/grimoire-rs/marketplace.git"
+
+[marketplace.owner]
+name = "Grimoire"
+url = "https://grimoire.rs"
+
+[plugins.grim-essentials]
+include = ["ghcr.io/grimoire-rs/bundles/grim-essentials:0"]
+description = "Grimoire first-party skills: the grim CLI, AI-config authoring, and grim artifact authoring"
+logo = "public/logo.svg"
+homepage = "https://grimoire.rs"
+license = "Apache-2.0"
+keywords = ["grimoire", "grim", "skills", "authoring", "ai-config"]
+
+[plugins.grim-essentials.author]
+name = "Grimoire"
+url = "https://github.com/grimoire-rs"
