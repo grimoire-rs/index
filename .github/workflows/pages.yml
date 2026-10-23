@@ -30,6 +30,15 @@ on:
   schedule:
     - cron: "23 * * * *"
   workflow_dispatch:
+    inputs:
+      fresh:
+        description: "Start a new build-state epoch: discard the cached blobs and enrich every artifact again"
+        type: boolean
+        default: false
+      purge:
+        description: "Drop one artifact from the carried-forward state: a registry reference, or a sha256 digest"
+        type: string
+        default: ""
 
 # Default-deny at the top; every job pays for exactly what it needs.
 permissions: {}
@@ -43,6 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: stats
     if: always()
+    timeout-minutes: 120
     permissions:
       contents: read
     steps:
@@ -50,6 +60,8 @@ jobs:
         with:
           persist-credentials: false
 
+      # The one job that restores and saves the Actions cache, so a build only
+      # ever restores what an earlier build saved. No other job here caches.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
@@ -70,6 +82,46 @@ jobs:
       # published sidecar.
       - id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      # What the last deploy learned about each artifact lives in a blob store,
+      # restored here so a run does not start cold. Only the default branch
+      # touches it, here and at the save. The restore asks for exactly
+      # the key `state-key` prints for the plane that deploy published, with no
+      # fallback key. `npx --no` because `package.json` is the repository's own
+      # file and may predate the command.
+      #
+      # The key must match the grammar as one whole string before it reaches
+      # `GITHUB_OUTPUT`. A line-oriented grep would admit `1-<digest>` plus a
+      # second line, and that line would become a second output. Anything
+      # else leaves the output unset: a cold build, nothing restored or saved.
+      - name: Read the build-state key
+        id: state-key
+        if: github.ref == 'refs/heads/main'
+        run: |
+          re='^[0-9]{1,16}-[0-9a-f]{64}$'
+          if key=$(npx --no grim-indexer state-key) && [[ "$key" =~ $re ]]; then
+            echo "key=$key" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::no usable build-state key - building cold, nothing restored or saved"
+          fi
+
+      # The cache service matches the key by prefix, so a restore can fill the
+      # blob store from an entry nobody named and report `cache-hit: false`.
+      # The next step empties it unless the hit was exact, so only the entry
+      # `state-key` named is ever read. A bad entry is retired with
+      # `gh cache delete <key>`; the run after it builds cold.
+      - name: Restore the build state
+        id: state-restore
+        if: github.ref == 'refs/heads/main' && steps.state-key.outputs.key != ''
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .grim-index-state/b
+          key: grim-index-state-v1-${{ steps.state-key.outputs.key }}
+
+      - name: Drop a restored state that was not asked for
+        id: state-restore-clean
+        if: github.ref == 'refs/heads/main' && steps.state-key.outputs.key != '' && steps.state-restore.outputs.cache-hit != 'true'
+        run: rm -rf -- .grim-index-state/b
 
       # The index stores pointers; everything a reader looks at - README,
       # changelog, logo, version list - lives in the registry, and grim is
@@ -92,19 +144,62 @@ jobs:
       # Enrichment is best-effort by design: a registry outage must degrade
       # the site to pointers-only, never block a deploy that is otherwise
       # ready. `enrich` itself keeps any sidecar it fails to refresh. Set
-      # `"enrich": false` in the `ci` block to drop these two steps entirely.
+      # `"enrich": false` in the `ci` block to drop these steps entirely.
       #
-      # `--seed` restores enrich/ from `<site>/enrich.json` - the checkpoint the
-      # last deploy published - before refreshing. Nothing is committed here, so
-      # without it this job starts from an empty tree every run: every digest
-      # probe compares against nothing, every README and payload is downloaded
-      # again, and every artifact without a `created` of its own is re-dated to
-      # this build. A checkpoint that cannot be read is a warning, not a
-      # failure; the run just does the full download it used to do.
+      # `--seed` starts from the state the last deploy published: it reads
+      # `<site>/c/root.json` and the enrich plane that root names. Nothing is
+      # committed here, so without it this job starts from an empty tree every
+      # run: every digest probe compares against nothing, every README and
+      # payload is downloaded again, and every artifact without a `created` of
+      # its own is re-dated to this build. A root that cannot be read is a
+      # warning, not a failure; the run just does the full download it used to
+      # do.
       - name: Refresh package metadata
+        env:
+          # The ceiling of this job in seconds, in the variable GitLab sets for
+          # its own jobs: the refresh budgets its time against it.
+          CI_JOB_TIMEOUT: 7200
+          # Dispatch inputs reach the script through the environment only. An
+          # input spliced into `run:` would be shell the dispatcher writes.
+          GRIM_INDEX_FRESH: ${{ inputs.fresh }}
+          GRIM_INDEX_PURGE: ${{ inputs.purge }}
         run: |
-          npm run enrich -- --seed ||
-            echo "::warning::enrich failed - building without READMEs, logos and version lists"
+          set -- --seed
+          strict=
+          if [ -n "${GRIM_INDEX_PURGE:-}" ]; then set -- "$@" "--purge=$GRIM_INDEX_PURGE"; strict=1; fi
+          if [ "${GRIM_INDEX_FRESH:-}" = true ]; then set -- "$@" --fresh; strict=1; fi
+          rc=0
+          npm run enrich -- "$@" || rc=$?
+          if [ "$rc" -eq 65 ] && [ -n "$strict" ]; then
+            echo "enrich rejected --purge or --fresh (exit 65)" >&2
+            exit 65
+          fi
+          [ "$rc" -eq 0 ] || echo "::warning::enrich exited $rc - building from the carried-forward state"
+
+      # The key of the state that run handed off, read on the default branch
+      # only because only that branch saves. Same admission rule as above.
+      - name: Read the key of the handed-off state
+        id: state-next
+        if: steps.state-key.outputs.key != '' && github.ref == 'refs/heads/main'
+        run: |
+          re='^[0-9]{1,16}-[0-9a-f]{64}$'
+          if key=$(npx --no grim-indexer state-key --next) && [[ "$key" =~ $re ]]; then
+            echo "key=$key" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::no usable key for the handed-off state - it will not be saved"
+          fi
+
+      # Saving is skipped when an entry already exists under that key, which
+      # is the common case once a deploy has published the state it saved.
+      - name: Look for a saved entry
+        id: state-lookup
+        if: github.ref == 'refs/heads/main' && steps.state-next.outputs.key != ''
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .grim-index-state/b
+          key: grim-index-state-v1-${{ steps.state-next.outputs.key }}
+          lookup-only: true
+
       # Invariant R-2 lives in these two steps and in their order.
       #
       # A completed `stats` job has already merged itself over this same
@@ -119,12 +214,12 @@ jobs:
         with:
           name: grim-stats
 
-      # `|| true` is forbidden here. It cannot tell a genuine 404 from a DNS
-      # failure, a TLS error, a 5xx or a truncated body - and if the `stats` job
-      # also failed, the deploy would then publish a site with no sidecar at all,
-      # the exact wipe R-2 exists to prevent. So the status code is captured
-      # and branched on: 404 is an empty seed, a 2xx that parses is the merge
-      # base, anything else fails the job.
+      # The indexer reads the published sidecar, through the root the live site
+      # publishes. Fetching `stats.json` here would read a 404 on a site that no
+      # longer serves one (`sync.legacy: false`) as the first run, and deploy with
+      # every rating gone. An unreadable root, a missing or mismatching blob and
+      # a document that does not parse all fail the job: `|| true` is forbidden,
+      # since it cannot tell a genuine first run from a wipe.
       - name: Seed from the published sidecar
         env:
           PAGES_URL: ${{ steps.pages.outputs.base_url }}
@@ -145,9 +240,8 @@ jobs:
             # Not defaulted: the built-in default names the first-party index,
             # and seeding from someone else's published stats would merge
             # their stats into this one's sidecar. TLS because the fetched
-            # document decides every published stat - `--proto '=https'`
-            # below would refuse it anyway, in curl's words instead of these.
-            *) echo "::error::index.config.json needs an explicit https \`site\` - the seed is read from <site>/stats.json (got '$SITE_URL')"; exit 1 ;;
+            # document decides every published stat.
+            *) echo "::error::index.config.json needs an explicit https \`site\` - the seed is read from the stats <site> publishes (got '$SITE_URL')"; exit 1 ;;
           esac
 
           # The Pages URL is a cross-check, never a second source: while it was
@@ -171,27 +265,7 @@ jobs:
             echo "using the stats document this run produced"
             exit 0
           fi
-          code=$(curl -sS --proto '=https' --tlsv1.2 --max-time 30 \
-            -o .stats.json.seed -w '%{http_code}' "$SITE_URL/stats.json") || {
-            echo "::error::could not read the published stats.json - refusing to deploy a site that would empty every published stat"
-            exit 1
-          }
-          case "$code" in
-            404)
-              echo "no stats.json published yet - starting from an empty seed"
-              ;;
-            2??)
-              node -e 'JSON.parse(require("fs").readFileSync(".stats.json.seed","utf8"))' || {
-                echo "::error::the published stats.json did not parse - refusing to treat an unreadable seed as an empty one"
-                exit 1
-              }
-              mv -f .stats.json.seed .stats.json
-              ;;
-            *)
-              echo "::error::the published stats.json returned HTTP $code"
-              exit 1
-              ;;
-          esac
+          npx --no grim-indexer stats-seed
       - name: Build index
         run: npm run build
 
@@ -199,18 +273,73 @@ jobs:
         with:
           path: dist
 
+      # The one place the build state is written. Last in the job so a failed
+      # build saves nothing, and on the default branch only: a pull request or
+      # a dispatch from another branch must not seed what the next deploy
+      # restores. `success()` is spelled out and no status override is
+      # allowed here, so a half-finished run never replaces a good entry. The
+      # key names the content, so an entry is written once; the lookup step
+      # skips the upload when one already exists.
+      - name: Save the build state
+        if: success() && github.ref == 'refs/heads/main' && steps.state-next.outputs.key != '' && steps.state-lookup.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .grim-index-state/b
+          key: grim-index-state-v1-${{ steps.state-next.outputs.key }}
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    # The Actions cache is for `build` alone.
+    cache-mode: none
     permissions:
       pages: write
       id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    # The same URL, handed to `probe`.
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+
+  # Warns when the live site answers with a content type browsers reject. The run
+  # stays green: `probe` exits 0 on anything it finds and `continue-on-error`
+  # covers a lock that predates it. `timeout-minutes` is load-bearing: the
+  # concurrency group is held until every job ends, so a hung probe would
+  # queue the next deploy behind it.
+  probe:
+    needs: deploy
+    runs-on: ubuntu-latest
+    # The Actions cache is for `build` alone.
+    cache-mode: none
+    timeout-minutes: 10
+    continue-on-error: true
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # No `cache: npm`: `build` is the one job that saves the Actions cache.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: npm ci --ignore-scripts
+
+      # The URL arrives through the environment and is quoted, never spliced
+      # into the script. `npx --no` runs the copy package-lock.json pins and
+      # never fetches one, so a lock that predates `probe` fails this job only.
+      - name: Probe the deployed site
+        env:
+          SITE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: npx --no grim-indexer probe "$SITE_URL"
+
   # Collects every signal `stats.json` carries into `.stats.json` - the sidecar
   # `build` joins onto the catalog and the deploy publishes beside all.json.
   #
@@ -231,6 +360,8 @@ jobs:
   # deleting `stats.json` from the deploy is the other half of the rollback.
   stats:
     runs-on: ubuntu-latest
+    # The Actions cache is for `build` alone.
+    cache-mode: none
     permissions:
       contents: read
       discussions: write
@@ -239,10 +370,11 @@ jobs:
         with:
           persist-credentials: false
 
+      # No `cache: npm`: `build` in pages.yml is the one job that saves the
+      # Actions cache.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
-          cache: npm
 
       - name: Install
         run: npm ci --ignore-scripts

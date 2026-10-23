@@ -60,8 +60,15 @@ on:
     paths:
       - "index/**"
       - index-policy.json
+      - marketplace.toml
+      - marketplace.lock
 
 permissions: {}
+
+# No job in this file restores or saves the Actions cache. The one that does
+# is `build` in pages.yml, so a build restores only what an earlier build
+# saved, never what a pull request or a collector left behind.
+cache-mode: none
 
 # One gate run per pull request. Superseding a run cancels it, and a cancelled
 # run is not a success - so nothing downstream of the gate can act on a verdict
@@ -90,10 +97,11 @@ jobs:
           path: pr-tree
           persist-credentials: false
 
+      # No `cache: npm`. This job runs with the base branch's cache scope, so
+      # an entry saved here would be one the site build could restore.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
-          cache: npm
 
       - name: Install
         run: npm ci --ignore-scripts

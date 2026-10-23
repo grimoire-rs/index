@@ -109,8 +109,8 @@ npm run ci:check   # fail on drift (what the verify-ci job runs)
 
 `task --list` wraps the same scripts, and the toolchain (task, node, grim)
 is pinned in [`ocx.toml`](./ocx.toml) and bootstrapped by
-[ocx](https://ocx.sh) — locally via direnv (`direnv allow`, PATH comes from
-`.envrc`), in CI via `ocx-sh/setup-ocx`. Without direnv, prefix commands
+[ocx](https://ocx.sh) — locally via `ocx shell allow` (once, per-prompt
+activation), in CI via `ocx-sh/setup-ocx`. Without it, prefix commands
 with `ocx run go-task -- task …`.
 
 ### The workflows are generated

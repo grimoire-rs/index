@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
-# Toolchain (task, node/npm, grim) is pinned in ocx.toml. Locally direnv
-# supplies PATH via .envrc (`direnv allow`); in CI ocx-sh/setup-ocx does.
+# Toolchain (task, node/npm, grim) is pinned in ocx.toml. Locally
+# `ocx shell allow` supplies PATH; in CI ocx-sh/setup-ocx does.
 #
 # The build, the gate and the enrichment all live in @grimoire-rs/indexer.
 # Which version runs is package-lock.json's answer and nothing else's — these

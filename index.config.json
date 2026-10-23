@@ -32,5 +32,10 @@
   "ci": {
     "forge": "github",
     "autoMerge": true
+  },
+  "sync": {
+    "layout": "anchored",
+    "legacy": true,
+    "revalidate": "1h"
   }
 }

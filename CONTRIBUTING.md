@@ -28,8 +28,8 @@ edit the file, open a PR, the same checks apply.
 Toolchain (`task`, Node, `grim`) is pinned in [`ocx.toml`](./ocx.toml) and
 bootstrapped by [ocx](https://ocx.sh):
 
-- Locally: install direnv, then `direnv allow` — `.envrc` loads it.
-- Without direnv: prefix commands with `ocx run go-task -- task ...`.
+- Locally: `ocx shell allow` once, for per-prompt activation.
+- Without it: prefix commands with `ocx run go-task -- task ...`.
 
 ## Building & Testing
 

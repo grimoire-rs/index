@@ -47,6 +47,11 @@ on:
 
 permissions: {}
 
+# No job in this file restores or saves the Actions cache. The one that does
+# is `build` in pages.yml, so a build restores only what an earlier build
+# saved, never what a pull request or a collector left behind.
+cache-mode: none
+
 jobs:
   verify-ci:
     runs-on: ubuntu-latest
@@ -57,10 +62,11 @@ jobs:
         with:
           persist-credentials: false
 
+      # No `cache: npm`: `build` in pages.yml is the one job that saves the
+      # Actions cache.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
-          cache: npm
 
       # Rendering needs no build toolchain, so nothing here runs a dependency's
       # lifecycle script.
