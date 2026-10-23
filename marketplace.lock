@@ -1,0 +1,31 @@
+[metadata]
+lock_version = 1
+declaration_hash_version = 1
+declaration_hash = "sha256:cc6d836f95d5b391385cfe3caefbf241fb0b32defe3fe45f028c7fd0d8ed878b"
+generated_by = "grim 0.15.0"
+generated_at = "2026-10-23T18:51:33Z"
+
+[[plugin]]
+name = "grim-essentials"
+declaration_hash = "sha256:0cc77651875570e464c7ef94d78bf117372913ebf28697a689c279c82cdde1a0"
+
+[[skill]]
+name = "ai-config-authoring"
+plugin = "grim-essentials"
+pinned = "ghcr.io/grimoire-rs/skills/ai-config-authoring@sha256:ed2ed4f262f61df794de370008a041af59215d4863898e9f6fea25fb72306062"
+bundle = "ghcr.io/grimoire-rs/bundles/grim-essentials"
+bundle_tag = "0"
+
+[[skill]]
+name = "grim-authoring"
+plugin = "grim-essentials"
+pinned = "ghcr.io/grimoire-rs/skills/grim-authoring@sha256:9c0d3c8ca36c9d74726b16c9609c830917265a0085f65c392791fe92f100b440"
+bundle = "ghcr.io/grimoire-rs/bundles/grim-essentials"
+bundle_tag = "0"
+
+[[skill]]
+name = "grim-usage"
+plugin = "grim-essentials"
+pinned = "ghcr.io/grimoire-rs/skills/grim-usage@sha256:4c06fe775c2054153fb38332af2cc90adf09b30d7c0a22d4d2805b3594ba29be"
+bundle = "ghcr.io/grimoire-rs/bundles/grim-essentials"
+bundle_tag = "0"
