@@ -226,22 +226,23 @@ jobs:
         run: |
           set -euo pipefail
 
-          # One source. The seed URL is `site` from index.config.json, read
-          # out of the checkout here - the same key, the same file and the
-          # same run as the job that produced the artifact above. Not baked
-          # in at render time on purpose: a workflow rendered before `site`
-          # was last edited would seed from one URL while the collectors read
-          # the other, which is the divergence this step exists to close.
-          SITE_URL=$(node -p 'JSON.parse(require("fs").readFileSync("index.config.json","utf8")).site ?? ""')
+          # One source. The seed URL is `site` as the indexer resolves it in
+          # this checkout - index.config.json, else derived from this
+          # repository - the same answer, from the same code, as the job that
+          # produced the artifact above. Not baked in at render time on
+          # purpose: a workflow rendered before `site` was last edited would
+          # seed from one URL while the collectors read the other, which is
+          # the divergence this step exists to close.
+          SITE_URL=$(npx --no grim-indexer site)
           rstrip() { u=$1; while [ "${u%/}" != "$u" ]; do u=${u%/}; done; printf '%s' "$u"; }
           SITE_URL=$(rstrip "$SITE_URL")
           case "$SITE_URL" in
             https://*) ;;
-            # Not defaulted: the built-in default names the first-party index,
+            # Never the built-in default: it names the first-party index,
             # and seeding from someone else's published stats would merge
             # their stats into this one's sidecar. TLS because the fetched
             # document decides every published stat.
-            *) echo "::error::index.config.json needs an explicit https \`site\` - the seed is read from the stats <site> publishes (got '$SITE_URL')"; exit 1 ;;
+            *) echo "::error::\`site\` must be https - the seed is read from the stats <site> publishes (got '$SITE_URL'); set it in index.config.json"; exit 1 ;;
           esac
 
           # The Pages URL is a cross-check, never a second source: while it was
@@ -257,7 +258,7 @@ jobs:
           # so a fresh artifact is no evidence that this URL is the right one.
           lower() { u=${1#*://}; h=${u%%/*}; printf '%s%s' "${h,,}" "${u#"$h"}"; }
           if [ -n "${PAGES_URL:-}" ] && [ "$(lower "$(rstrip "$PAGES_URL")")" != "$(lower "$SITE_URL")" ]; then
-            echo "::error::index.config.json publishes to $SITE_URL but this pipeline deploys $PAGES_URL - the seed would be read from one and the sidecar published to the other"
+            echo "::error::\`site\` is $SITE_URL but this pipeline deploys $PAGES_URL - the seed would be read from one and the sidecar published to the other; set \`site\` in index.config.json"
             exit 1
           fi
 
