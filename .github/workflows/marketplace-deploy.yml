@@ -1,0 +1,118 @@
+# Hand-written, not rendered by @grimoire-rs/indexer (like refresh.yml), so
+# `npm run ci` neither owns nor rewrites it.
+#
+# Publishes the curated marketplace (marketplace.toml + the committed
+# marketplace.lock) to https://github.com/grimoire-rs/marketplace, a deploy
+# target that holds only generated files. It rolls no pins: every pin it
+# publishes was reviewed here as a marketplace.lock diff. Recipe:
+# https://grimoire.rs/guides/hosting-a-marketplace/#sibling-deploy
+#
+# Settings this workflow relies on:
+#   - the Environment `marketplace`, restricted to `main`, holding the variable
+#     MARKETPLACE_APP_CLIENT_ID and the secret MARKETPLACE_APP_PRIVATE_KEY of a GitHub
+#     App installed on grimoire-rs/marketplace only (Contents: write, never
+#     Workflows). No pull_request event reaches this file, so PR code never
+#     sees the key.
+
+name: marketplace-deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - marketplace.toml
+      - marketplace.lock
+      - public/logo.svg
+      - scripts/marketplace-gate.sh
+      - .github/workflows/marketplace-deploy.yml
+  # Self-heal: repairs a hand edit of the target or a deploy that failed.
+  # A run with nothing to change makes no commit.
+  schedule:
+    - cron: "41 4 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: marketplace-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.repository == 'grimoire-rs/index' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: marketplace
+    permissions:
+      contents: read
+    env:
+      TARGET: grimoire-rs/marketplace
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Pinned by digest, not `latest` like pages.yml: this job holds a write
+      # token. Move grim by editing both literals in a reviewed pull request.
+      - name: Install grim
+        env:
+          GRIM_VERSION: v0.15.0
+          GRIM_SHA256: b69d0ebb6fbdf560ecdda3cb146d6cc6bd94822f7f409ad71eec1990ba019cba
+        run: |
+          set -eu
+          asset=grimoire-x86_64-unknown-linux-gnu.tar.gz
+          url="https://github.com/grimoire-rs/grimoire/releases/download/$GRIM_VERSION/$asset"
+          curl --proto '=https' --tlsv1.2 -fLsS "$url" -o "$RUNNER_TEMP/$asset"
+          echo "$GRIM_SHA256  $RUNNER_TEMP/$asset" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$asset" --strip-components=1 --wildcards -C "$RUNNER_TEMP" '*/grim'
+          install -D -m 0755 "$RUNNER_TEMP/grim" "$HOME/.local/bin/grim"
+          echo "$HOME/.local/bin" >>"$GITHUB_PATH"
+          "$HOME/.local/bin/grim" --version
+
+      - name: Token
+        id: app
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.MARKETPLACE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.MARKETPLACE_APP_PRIVATE_KEY }}
+          owner: grimoire-rs
+          repositories: marketplace
+          # Down-scoped to the target; never `workflows`.
+          permission-contents: write
+
+      - name: Export, gate and push
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          APP_SLUG: ${{ steps.app.outputs.app-slug }}
+        run: |
+          set -eu
+          OUT="$RUNNER_TEMP/marketplace"
+          # Hand git the token for these commands only; it stays out of .git/config.
+          auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          echo "::add-mask::$auth"
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0="http.https://github.com/.extraheader"
+          export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $auth"
+
+          git clone --depth 1 "https://github.com/$TARGET.git" "$OUT"
+          uid=$(gh api "/users/${APP_SLUG}%5Bbot%5D" --jq .id)
+          git -C "$OUT" config user.name "${APP_SLUG}[bot]"
+          git -C "$OUT" config user.email "${uid}+${APP_SLUG}[bot]@users.noreply.github.com"
+
+          grim export marketplace --marketplace marketplace.toml -o "$OUT" --format json >"$RUNNER_TEMP/export.json"
+          # export re-pins a plugin whose declaration drifted from the lock;
+          # publishing those pins would skip the lock-diff review.
+          git diff --quiet -- marketplace.lock || {
+            echo "::error::marketplace.lock is stale; run grim update --marketplace marketplace.toml and commit it"
+            exit 1
+          }
+          (cd "$OUT" && OUTPUT_ROOT="$PWD" sh "$GITHUB_WORKSPACE/scripts/marketplace-gate.sh" \
+            "$GITHUB_WORKSPACE/marketplace.toml" "$RUNNER_TEMP/export.json")
+
+          git -C "$OUT" add -A
+          if git -C "$OUT" diff --cached --quiet; then
+            echo "The marketplace is up to date."
+            exit 0
+          fi
+          git -C "$OUT" commit -q -m "chore: regenerate from grimoire-rs/index@${GITHUB_SHA}"
+          git -C "$OUT" push origin HEAD
