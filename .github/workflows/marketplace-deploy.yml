@@ -23,6 +23,7 @@ on:
       - marketplace.toml
       - marketplace.lock
       - public/logo.svg
+      - marketplace/**
       - scripts/marketplace-gate.sh
       - .github/workflows/marketplace-deploy.yml
   # Self-heal: repairs a hand edit of the target or a deploy that failed.
