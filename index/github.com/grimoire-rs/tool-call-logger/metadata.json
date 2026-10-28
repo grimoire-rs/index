@@ -1,5 +1,5 @@
 {
-  "created": "2026-10-23T12:18:52+02:00",
+  "created": "2026-10-28T10:35:49+01:00",
   "description": "Observer example: appends one line per tool call and per session start to a log file outside the repository. Cannot block, alter, or delay anything — the observer tier's response is discarded by design. Writes only to $GRIM_EXAMPLE_LOG (default: a file under $TMPDIR).",
   "kind": "hook",
   "name": "tool-call-logger",
